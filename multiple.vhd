@@ -2,14 +2,14 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.all;
 USE  IEEE.STD_LOGIC_ARITH.all;
 USE  IEEE.STD_LOGIC_UNSIGNED.all;
-use  ieee.math_real.all;
 
 
 ENTITY multiple IS
    PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
         Red, Green,Blue 				: OUT std_logic;
         Vert_sync	: IN std_logic;
-		move_left, move_right : IN STD_LOGIC
+		move_left, move_right : IN STD_LOGIC;
+		collide: out std_logic
 		);
 END multiple;
 
@@ -33,6 +33,10 @@ signal counter: std_logic := '1';
 signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
 signal avatar_y_pos : std_logic_vector(9 downto 0) := "0000000000";
 signal avatar_on: std_logic;
+
+
+signal collision_detected: std_logic := '0';
+
 
 BEGIN           
 	
@@ -60,16 +64,22 @@ begin
 --			Ball_on <= '0';
 		end if;
 		
---		-- collision detection
---		IF ('0' & x_positions(i) + size <= pixel_column + Size) AND
---				-- compare positive numbers only
---		(x_positions(i) + Size >= '0' & pixel_column) AND
---		('0' & y_positions(i) <= pixel_row + Size) AND
---		(y_positions(i) + Size >= '0' & pixel_row ) THEN
---			Ball_on <= '1';
-----		ELSE
-----			Ball_on <= '0';
---		end if;
+		-- collision detection
+--		IF (std_logic_vector(abs(signed(avatar_x_pos)-signed(x_positions(i)))) < 2 * size) AND
+--		(std_logic_vector(abs(signed(avatar_y_pos)-signed(y_positions(i)))) < 2 * size)THEN
+			--collision -> deduct 1 life
+			
+		IF((avatar_x_pos - size < x_positions(i) + size) AND (avatar_y_pos - size < y_positions(i) + size)) OR
+		((avatar_x_pos + size > x_positions(i) - size) AND (avatar_y_pos - size < y_positions(i) + size)) OR
+		((avatar_x_pos - size < x_positions(i) + size) AND (avatar_y_pos + size > y_positions(i) - size)) OR
+		((avatar_x_pos + size > x_positions(i) - size) AND (avatar_y_pos + size > y_positions(i) - size)) THEN
+			-- collision detected -> deduct 1 life
+			--collision_detected <= '1';
+			collide <= '1';
+		else
+			collide <= '0';
+
+		end if;
 		
 	end loop;
 

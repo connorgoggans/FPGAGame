@@ -20,6 +20,10 @@ ENTITY obstacles IS
     -- Input switches
     
     SW 			: IN STD_LOGIC_VECTOR (17 downto 0);         -- DPDT switches
+	 
+	 -- LED
+	 
+	 LEDR			: OUT STD_Logic_vector (17 downto 0);
 
     -- VGA output
     
@@ -63,7 +67,8 @@ COMPONENT multiple
    PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
         Red, Green,Blue 				: OUT std_logic;
         Vert_sync	: IN std_logic;
-		  move_left, move_right: IN std_logic
+		  move_left, move_right: IN std_logic;
+		  collide : OUT std_logic
 		  );
    
 END COMPONENT;
@@ -136,7 +141,8 @@ BEGIN
 		 Blue		    => blue_int,
 		 Vert_sync		=> vert_sync_int,
 		 move_left      => KEY(1),
-		 move_right     => KEY(0)
+		 move_right     => KEY(0),
+		 collide       => LEDR(17)
 		);
 
 		LCD_ON   <= '1';
