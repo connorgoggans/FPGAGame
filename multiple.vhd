@@ -69,10 +69,14 @@ begin
 --		(std_logic_vector(abs(signed(avatar_y_pos)-signed(y_positions(i)))) < 2 * size)THEN
 			--collision -> deduct 1 life
 			
-		IF((avatar_x_pos - size < x_positions(i) + size) AND (avatar_y_pos - size < y_positions(i) + size)) OR
-		((avatar_x_pos + size > x_positions(i) - size) AND (avatar_y_pos - size < y_positions(i) + size)) OR
-		((avatar_x_pos - size < x_positions(i) + size) AND (avatar_y_pos + size > y_positions(i) - size)) OR
-		((avatar_x_pos + size > x_positions(i) - size) AND (avatar_y_pos + size > y_positions(i) - size)) THEN
+		IF((avatar_x_pos - size <= x_positions(i) + size) AND (avatar_y_pos - size <= y_positions(i) + size)
+		   AND (avatar_x_pos + size >= x_positions(i) + size) AND (avatar_y_pos + size >= y_positions(i) + size)) OR
+		((avatar_x_pos + size >= x_positions(i) - size) AND (avatar_y_pos - size <= y_positions(i) + size)
+		   AND (avatar_x_pos - size <= x_positions(i) - size) AND (avatar_y_pos + size >= y_positions(i) + size)) OR
+		((avatar_x_pos - size <= x_positions(i) + size) AND (avatar_y_pos + size >= y_positions(i) - size)
+		   AND (avatar_x_pos + size >= x_positions(i) + size) AND (avatar_y_pos - size <= y_positions(i) - size)) OR
+		((avatar_x_pos + size >= x_positions(i) - size) AND (avatar_y_pos + size >= y_positions(i) - size)
+		   AND (avatar_x_pos - size <= x_positions(i) - size) AND (avatar_y_pos - size <= y_positions(i) - size)) THEN
 			-- collision detected -> deduct 1 life
 			--collision_detected <= '1';
 			collide <= '1';
