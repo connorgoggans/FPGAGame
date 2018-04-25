@@ -30,7 +30,15 @@ ENTITY obstacles IS
     VGA_VS 		 : out std_logic;            -- V_SYNC
     VGA_R 		 : out unsigned(7 downto 0); -- Red[9:0]
     VGA_G 		 : out unsigned(7 downto 0); -- Green[9:0]
-    VGA_B 		 : out unsigned(7 downto 0) -- Blue[9:0]
+    VGA_B 		 : out unsigned(7 downto 0); -- Blue[9:0]
+
+	-- 16 X 2 LCD Module
+    LCD_BLON : out std_logic;      							-- Back Light ON/OFF
+    LCD_EN   : out std_logic;      							-- Enable
+    LCD_ON   : out std_logic;      							-- Power ON/OFF
+    LCD_RS   : out std_logic;	   							-- Command/Data Select, 0 = Command, 1 = Data
+    LCD_RW   : out std_logic; 	   						-- Read/Write Select, 0 = Write, 1 = Read
+    LCD_DATA : inout std_logic_vector(7 downto 0) 	-- Data bus 8 bits
 
 	);
 END obstacles;
@@ -53,8 +61,9 @@ END COMPONENT;
 COMPONENT multiple
 
    PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
-        Green,Blue 				: OUT std_logic;
-        Vert_sync	: IN std_logic
+        Red, Green,Blue 				: OUT std_logic;
+        Vert_sync	: IN std_logic;
+		  move_left, move_right: IN std_logic
 		  );
    
 END COMPONENT;
@@ -65,6 +74,22 @@ component avatar
 			Red : OUT std_logic;
          Horiz_sync	: IN std_logic);
 end component;
+
+COMPONENT LCD_Display
+
+	GENERIC(Num_Hex_Digits: Integer:= 4);
+	
+	PORT(reset					: IN	STD_LOGIC;
+	     clk_50MHz				: IN	STD_LOGIC;
+		  Hex_Display_Data	: IN    STD_LOGIC_VECTOR((Num_Hex_Digits*4)-1 DOWNTO 0);
+		  LCD_RS					: OUT	STD_LOGIC;
+		  LCD_E					: OUT	STD_LOGIC;
+		  LCD_RW					: OUT   STD_LOGIC;
+		  DATA_BUS				: INOUT	STD_LOGIC_VECTOR(7 DOWNTO 0)
+		 );
+
+END COMPONENT;
+
 
 
 SIGNAL red_int : STD_LOGIC;
@@ -108,17 +133,24 @@ BEGIN
 		(pixel_row		=> pixel_row_int,
 		 pixel_column	=> pixel_column_int,
 		 Green			=> green_int,
-		 Blue				=> blue_int,
-		 Vert_sync		=> vert_sync_int
+		 Blue		    => blue_int,
+		 Vert_sync		=> vert_sync_int,
+		 move_left      => KEY(1),
+		 move_right     => KEY(0)
 		);
-		
-		U3: avatar port map
-		(pixel_row		=> pixel_row_int,
-		 pixel_column => pixel_column_int,
-		 move_left => KEY(1),
-		 move_right => KEY(0),
-		 Red => red_int,
-		 Horiz_sync => vert_sync_int
-		 );
+
+		LCD_ON   <= '1';
+		LCD_BLON <= '1';
+
+
+		U3: LCD_Display PORT MAP
+		(reset				=>	NOT SW(17),
+		 clk_50MHz			=>	CLOCK_50,
+		 Hex_Display_Data	=>	SW(15 DOWNTO 0),	
+		 LCD_RS				=>	LCD_RS,
+		 LCD_E				=>	LCD_EN,
+		 LCD_RW				=>	LCD_RW,
+		 DATA_BUS			=>	LCD_DATA
+		);
 
 END structural;

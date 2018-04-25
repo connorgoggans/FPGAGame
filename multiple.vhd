@@ -7,16 +7,17 @@ use  ieee.math_real.all;
 
 ENTITY multiple IS
    PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
-        Red,Green,Blue 				: OUT std_logic;
-        Vert_sync	: IN std_logic
-		  );
+        Red, Green,Blue 				: OUT std_logic;
+        Vert_sync	: IN std_logic;
+		move_left, move_right : IN STD_LOGIC
+		);
 END multiple;
 
 
 architecture behavior of multiple is
 
-type coordArray is array (3 downto 0) of std_logic_vector(9 downto 0);
-type motions is array (3 downto 0) of std_logic_vector(9 downto 0);
+type coordArray is array (4 downto 0) of std_logic_vector(9 downto 0);
+type motions is array (4 downto 0) of std_logic_vector(9 downto 0);
 
 SIGNAL Size : std_logic_vector(9 DOWNTO 0);  
 signal y_positions: coordArray;
@@ -29,16 +30,22 @@ signal new_cord: std_logic_vector(9 downto 0);
 signal rand_speed: std_logic_vector(9 downto 0);
 signal counter: std_logic := '1';
 
+signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
+signal avatar_y_pos : std_logic_vector(9 downto 0) := "0000000000";
+signal avatar_on: std_logic;
+
 BEGIN           
 	
 -- Set the size of the ball
 Size <= CONV_STD_LOGIC_VECTOR(20,10);
 
+avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
+
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
 	Red <=  NOT Ball_on;
-	Green <= NOT Ball_on;
-	Blue <=  '1';
+	Green <= NOT Ball_on AND NOT avatar_on;
+	Blue <=  NOT avatar_on;
 	
 	ball_on <= '0';
 	for i in y_positions' range loop
@@ -52,7 +59,29 @@ begin
 --		ELSE
 --			Ball_on <= '0';
 		end if;
+		
+--		-- collision detection
+--		IF ('0' & x_positions(i) + size <= pixel_column + Size) AND
+--				-- compare positive numbers only
+--		(x_positions(i) + Size >= '0' & pixel_column) AND
+--		('0' & y_positions(i) <= pixel_row + Size) AND
+--		(y_positions(i) + Size >= '0' & pixel_row ) THEN
+--			Ball_on <= '1';
+----		ELSE
+----			Ball_on <= '0';
+--		end if;
+		
 	end loop;
+
+	IF ('0' & avatar_X_pos <= pixel_column + Size) AND
+ 			-- compare positive numbers only
+ 	(avatar_X_pos + Size >= '0' & pixel_column) AND
+ 	('0' & avatar_Y_pos <= pixel_row + Size) AND
+ 	(avatar_Y_pos + Size >= '0' & pixel_row ) THEN
+ 		avatar_on <= '1';
+ 	ELSE
+ 		avatar_on <= '0';
+END IF;
 end process VGA;
 
 Move_Ball: process
@@ -73,10 +102,14 @@ BEGIN
 					y_positions(i) <= conv_std_logic_vector(100, 10);
 					x_positions(i) <= conv_std_logic_vector(100, 10);
 					y_motions(i) <= conv_std_logic_vector(1,10);
-				else 
+				elsif(i = 3) then 
 					y_positions(i) <= conv_std_logic_vector(140, 10);
 					x_positions(i) <= conv_std_logic_vector(140, 10);
 					y_motions(i) <= conv_std_logic_vector(4,10);
+				else
+					y_positions(i) <= conv_std_logic_vector(180, 10);
+					x_positions(i) <= conv_std_logic_vector(180, 10);
+					y_motions(i) <= conv_std_logic_vector(5,10);
 				end if;
 			end loop;
 			isStart <= '0';
@@ -94,6 +127,21 @@ BEGIN
 		end if;
 			
 END process Move_Ball;
+
+Move_avatar: process
+BEGIN
+			-- Move ball once every vert sync
+	WAIT UNTIL vert_sync'event and vert_sync = '1';
+			IF move_left = '0' THEN
+				IF avatar_X_pos > Size THEN
+					avatar_X_pos <= avatar_X_pos - 5;
+				END IF;
+			ELSIF move_right = '0' THEN
+				IF avatar_X_pos < 640 - Size THEN
+					avatar_X_pos <= avatar_X_pos + 5;
+				END IF;
+			END IF;
+END process Move_avatar;
 
 Random: process(vert_sync)
 variable rand_num: integer := 20;   
