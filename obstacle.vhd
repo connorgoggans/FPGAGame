@@ -7,7 +7,7 @@ use  ieee.math_real.all;
 
 ENTITY obstacle IS
    PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
-        Red,Green,Blue 				: OUT std_logic;
+        Green,Blue 				: OUT std_logic;
         Vert_sync	: IN std_logic
 		  );
 END obstacle;
@@ -35,7 +35,7 @@ Size <= CONV_STD_LOGIC_VECTOR(20,10);
 
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
-	Red <=  NOT Ball_on;
+
 	Green <= NOT Ball_on;
 	Blue <=  '1';
 	

@@ -53,12 +53,18 @@ END COMPONENT;
 COMPONENT multiple
 
    PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
-        Red,Green,Blue 				: OUT std_logic;
+        Green,Blue 				: OUT std_logic;
         Vert_sync	: IN std_logic
 		  );
-       
-
+   
 END COMPONENT;
+
+component avatar
+	port (move_left, move_right : IN STD_LOGIC;
+			pixel_row, pixel_column : IN std_logic_vector(9 DOWNTO 0);
+			Red : OUT std_logic;
+         Horiz_sync	: IN std_logic);
+end component;
 
 
 SIGNAL red_int : STD_LOGIC;
@@ -98,14 +104,21 @@ BEGIN
 		 pixel_column		=>	pixel_column_int
 		);
 		
-		U3: multiple PORT MAP
+		U2: multiple PORT MAP
 		(pixel_row		=> pixel_row_int,
 		 pixel_column	=> pixel_column_int,
-		 Red				=> red_int,
 		 Green			=> green_int,
 		 Blue				=> blue_int,
 		 Vert_sync		=> vert_sync_int
 		);
 		
+		U3: avatar port map
+		(pixel_row		=> pixel_row_int,
+		 pixel_column => pixel_column_int,
+		 move_left => KEY(1),
+		 move_right => KEY(0),
+		 Red => red_int,
+		 Horiz_sync => vert_sync_int
+		 );
 
 END structural;
