@@ -108,6 +108,7 @@ SIGNAL pixel_column_int :STD_LOGIC_VECTOR(9 DOWNTO 0);
 signal lives_counter : std_logic_vector(3 downto 0);
 signal level_counter : std_logic_vector(3 downto 0);
 signal score_counter : std_logic_vector(19 downto 0); 
+signal rand : std_logic_vector(9 downto 0);
 
 BEGIN
 
@@ -163,5 +164,13 @@ BEGIN
 		 LCD_RW				=>	LCD_RW,
 		 DATA_BUS			=>	LCD_DATA
 		);
+		
+--		U4: lfsr_9_bit port map
+--		(i_clk    => CLOCK_50;
+--		 i_rstb       => '1';
+--		 i_sync_reset  => '0';
+--       i_seed          => "010101010";
+--       i_en            => '1';
+--       o_lsfr          => rand);
 
 END structural;

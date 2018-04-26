@@ -236,7 +236,6 @@ END process Move_avatar;
 
 Random: process(vert_sync)
 variable rand_num: integer := 20;   
-variable range_of_rand : integer := 600;    
 begin
 	if(rand + rand_num >= 1280) then
 		rand <= 20 + rand_num;
