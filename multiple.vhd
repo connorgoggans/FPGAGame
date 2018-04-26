@@ -144,7 +144,26 @@ BEGIN
 				else
 					y_positions(i) <= y_positions(i) + y_motions(i);
 				end if;
-		end loop;
+			end loop;
+		end if;
+
+			-- movement for extra life token --
+		if(life_y_pos & '0') >= 960 - life_Size then
+			-- got to the end, re-gen coordinates
+			if(toggle_life = '0') then
+				--put life on screen--
+				life_y_pos <= life_size;
+				life_x_pos <= conv_std_logic_vector(rand, 10);
+				life_speed <= conv_std_logic_vector(4,10);
+			else
+				--put life off screen--
+				life_y_pos <= life_size;
+				life_x_pos <= conv_std_logic_vector(800, 10);
+				life_speed <= conv_std_logic_vector(1,10);
+			end if;
+			toggle_life <= not toggle_life;
+		else
+			life_y_pos <= life_y_pos + life_speed;
 		end if;
 		
 		if ((avatar_x_pos - size < x_positions(0) + size) AND (avatar_x_pos + size > x_positions(0) - size) 
@@ -245,27 +264,6 @@ BEGIN
 			
 END process Move_Ball;
 
-move_life: process
-BEGIN
-	WAIT UNTIL vert_sync'event and vert_sync = '1';
-	if(life_y_pos & '0') >= 960 - life_Size then
-		-- got to the end, re-gen coordinates
-		if(toggle_life = '0') then
-			--put life on screen--
-			life_y_pos <= life_size;
-			life_x_pos <= conv_std_logic_vector(rand, 10);
-			life_speed <= conv_std_logic_vector(4,10);
-		else
-			--put life off screen--
-			life_y_pos <= life_size;
-			life_x_pos <= conv_std_logic_vector(800, 10);
-			life_speed <= conv_std_logic_vector(1,10);
-		end if;
-		toggle_life <= not toggle_life;
-	else
-		life_y_pos <= life_y_pos + life_speed;
-	end if;
-end process move_life;
 
 Move_avatar: process
 BEGIN
