@@ -37,11 +37,11 @@ architecture behavior of multiple is
 
 	-- signals to keep track of extra life token --
 	signal life_Size   : std_logic_vector(9 downto 0);
-	signal life_x_pos  : std_logic_vector(9 downto 0) := conv_std_logic_vector(70, 10);
-	signal life_y_pos  : std_logic_vector(9 downto 0) := life_size;
+	signal life_x_pos  : std_logic_vector(9 downto 0);
+	signal life_y_pos  : std_logic_vector(9 downto 0);
 	signal life_on     : std_logic;
-	signal life_speed  : std_logic_vector(9 downto 0) := conv_std_logic_vector(4, 10);
-	signal toggle_life : std_logic := '0';
+	signal life_speed  : std_logic_vector(9 downto 0);
+	signal toggle_life : std_logic;
 
 	-- signals to keep track of player status --
 	signal score_counter    : integer := 0;
@@ -110,8 +110,14 @@ begin
 				-- Move ball once every vertical sync
 				wait until vert_sync'EVENT and vert_sync = '1';
 				if (isStart = '1') then
+
+					-- initialize extra life token --
 					life_speed <= CONV_STD_LOGIC_VECTOR(4, 10);
+					life_x_pos := conv_std_logic_vector(lfsr, 10);
+					life_y_pos := life_size;
+					toggle_life := '0';
  
+					-- initialize obstacles --
 					for i in y_positions' range loop
 						if (i = 0) then
 							y_positions(i) <= conv_std_logic_vector(20, 10);
