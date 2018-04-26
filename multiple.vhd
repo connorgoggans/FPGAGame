@@ -34,10 +34,11 @@ signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
 signal avatar_y_pos : std_logic_vector(9 downto 0);
 signal avatar_on: std_logic;
 
-signal life_x_pos, life_y_pos : std_logic_vector(9 downto 0);
+signal life_x_pos : std_logic_vector(9 downto 0) := conv_std_logic_vector(70, 10); 
+signal life_y_pos : std_logic_vector(9 downto 0) := life_size;
 signal life_on: std_logic;
-signal life_speed :std_logic_vector(9 downto 0);
-signal toggle_life:std_logic;
+signal life_speed :std_logic_vector(9 downto 0):= conv_std_logic_vector(4,10);
+signal toggle_life:std_logic := '0';
 
 signal score_counter : integer := 0;
 signal lives_counter : integer := 3;
