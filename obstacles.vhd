@@ -10,27 +10,23 @@ ENTITY obstacles IS
 	PORT
 	(
     -- Clocks
-    
     CLOCK_50	: IN STD_LOGIC;  -- 50 MHz
  
     -- Buttons 
-    
     KEY 		: IN STD_LOGIC_VECTOR (3 downto 0);         -- Push buttons
-
-    -- Input switches
-    
-    SW 			: IN STD_LOGIC_VECTOR (17 downto 0);         -- DPDT switches
+	 
+	 -- switches
+	 SW		: IN STD_LOGIC_VECTOR (17 downto 0);
 
     -- VGA output
-    
     VGA_BLANK_N : out std_logic;            -- BLANK
-    VGA_CLK		: out std_logic;            -- Clock
-    VGA_HS 		: out std_logic;            -- H_SYNC
+    VGA_CLK		 : out std_logic;            -- Clock
+    VGA_HS 		 : out std_logic;            -- H_SYNC
     VGA_SYNC_N  : out std_logic;            -- SYNC
-    VGA_VS 		: out std_logic;            -- V_SYNC
-    VGA_R 		: out unsigned(7 downto 0); -- Red[9:0]
-    VGA_G 		: out unsigned(7 downto 0); -- Green[9:0]
-    VGA_B 		: out unsigned(7 downto 0); -- Blue[9:0]
+    VGA_VS 		 : out std_logic;            -- V_SYNC
+    VGA_R 		 : out unsigned(7 downto 0); -- Red[9:0]
+    VGA_G 		 : out unsigned(7 downto 0); -- Green[9:0]
+    VGA_B 		 : out unsigned(7 downto 0); -- Blue[9:0]
 
 	-- 16 X 2 LCD Module
     LCD_BLON : out std_logic;      							-- Back Light ON/OFF
@@ -39,13 +35,13 @@ ENTITY obstacles IS
     LCD_RS   : out std_logic;	   							-- Command/Data Select, 0 = Command, 1 = Data
     LCD_RW   : out std_logic; 	   						-- Read/Write Select, 0 = Write, 1 = Read
     LCD_DATA : inout std_logic_vector(7 downto 0) 	-- Data bus 8 bits
-
+	
 	);
 END obstacles;
 
 
 -- Architecture body 
--- 		Describes the functionality or internal implementation of the entity
+-- Describes the functionality or internal implementation of the entity
 
 ARCHITECTURE structural OF obstacles IS
 
@@ -65,37 +61,35 @@ COMPONENT multiple
          Red, Green,Blue 			: OUT std_logic;
          Vert_sync					: IN std_logic;
 		 move_left, move_right		: IN std_logic;
-		 score   					: OUT std_logic_vector(19 downto 0);
-		 lives	 					: OUT std_logic_vector(3 downto 0);
-		 level   					: OUT std_logic_vector(3 downto 0);
-		 reset						: IN std_logic;
-		 clock						: IN std_logic
+		 score   						: OUT std_logic_vector(19 downto 0);
+		 lives	 						: OUT std_logic_vector(3 downto 0);
+		 level   						: OUT std_logic_vector(3 downto 0);
+		 reset							: IN std_logic;
+		 clock							: IN std_logic
 		);
    
 END COMPONENT;
 
 
 COMPONENT LCD_Display
-
-	GENERIC(Num_Hex_Digits: Integer := 4);
 	
-	PORT(reset				: IN std_logic;
-	     clk_50MHz			: IN std_logic;
+	PORT(reset					: IN std_logic;
+	    clk_50MHz				: IN std_logic;
 		 Hex_Display_Lives	: IN std_logic_vector(3 downto 0);
 		 Hex_Display_Level	: IN std_logic_vector(3 downto 0);
 		 Hex_Display_Score	: IN std_logic_vector(19 downto 0);
-		 LCD_RS				: OUT std_logic;
-		 LCD_E				: OUT std_logic;
-		 LCD_RW				: OUT std_logic;
-		 DATA_BUS			: INOUT	std_logic_vector(7 DOWNTO 0)
+		 LCD_RS					: OUT std_logic;
+		 LCD_E					: OUT std_logic;
+		 LCD_RW					: OUT std_logic;
+		 DATA_BUS				: INOUT	std_logic_vector(7 DOWNTO 0)
 		);
 
 END COMPONENT;
 
 SIGNAL red_int 			: std_logic;
-SIGNAL green_int 		: std_logic;
-SIGNAL blue_int 		: std_logic;
-SIGNAL video_on_int 	: std_logic;
+SIGNAL green_int 			: std_logic;
+SIGNAL blue_int 			: std_logic;
+SIGNAL video_on_int 		: std_logic;
 SIGNAL vert_sync_int 	: std_logic;
 SIGNAL horiz_sync_int 	: std_logic; 
 SIGNAL pixel_clock_int 	: std_logic;
@@ -120,13 +114,13 @@ BEGIN
 
 	U1: VGA_SYNC_module PORT MAP
 		(clock_50Mhz		=>	CLOCK_50,
-		 red				=>	red_int,
+		 red					=>	red_int,
 		 green				=>	green_int,	
-		 blue				=>	blue_int,
-		 red_out			=>	VGA_R(7),
+		 blue					=>	blue_int,
+		 red_out				=>	VGA_R(7),
 		 green_out			=>	VGA_G(7),
 		 blue_out			=>	VGA_B(7),
-		 horiz_sync_out		=>	horiz_sync_int,
+		 horiz_sync_out	=>	horiz_sync_int,
 		 vert_sync_out		=>	vert_sync_int,
 		 video_on			=>	VGA_BLANK_N,
 		 pixel_clock		=>	VGA_CLK,
@@ -138,11 +132,11 @@ BEGIN
 		(pixel_row		=> pixel_row_int,
 		 pixel_column	=> pixel_column_int,
 		 Green			=> green_int,
-		 Blue		    => blue_int,
+		 Blue		    	=> blue_int,
 		 Red         	=> red_int,
 		 Vert_sync		=> vert_sync_int,
-		 move_left      => KEY(2),
-		 move_right     => KEY(1),
+		 move_left     => KEY(2),
+		 move_right    => KEY(1),
 		 score			=> score_counter,
 		 level			=> level_counter,
 		 lives			=> lives_counter,
@@ -155,15 +149,15 @@ BEGIN
 
 
 	U3: LCD_Display PORT MAP
-		(reset				=>	NOT SW(17),
-		 clk_50MHz			=>	CLOCK_50,
+		(reset					=> not SW(17),
+		 clk_50MHz				=>	CLOCK_50,
 		 Hex_Display_Lives	=>	lives_counter,
 		 Hex_Display_Level 	=> level_counter,
 		 Hex_Display_Score 	=> score_counter,
-		 LCD_RS				=>	LCD_RS,
-		 LCD_E				=>	LCD_EN,
-		 LCD_RW				=>	LCD_RW,
-		 DATA_BUS			=>	LCD_DATA
+		 LCD_RS					=>	LCD_RS,
+		 LCD_E					=>	LCD_EN,
+		 LCD_RW					=>	LCD_RW,
+		 DATA_BUS				=>	LCD_DATA
 		);
 
 END structural;
