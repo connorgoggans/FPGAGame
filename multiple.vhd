@@ -49,7 +49,6 @@ signal level_counter : integer := 0;
 signal score_multiplier: integer := 10;
 
 signal collide : std_logic;
-signal life_collide: std_logic;
 
 BEGIN           
 	
@@ -251,13 +250,23 @@ BEGIN
 		else
 			--put life off screen--
 			life_y_pos <= life_size;
-			life_x_pos <= conv_std_logic_vector(1300, 10);
+			life_x_pos <= conv_std_logic_vector(800, 10);
 			life_speed <= conv_std_logic_vector(1,10);
 		end if;
 		toggle_life <= not toggle_life;
 	else
 		life_y_pos <= life_y_pos + life_speed;
 	end if;
+
+	if ((avatar_x_pos - size < life_x_pos + size) AND (avatar_x_pos + size > life_x_pos - size) 
+		AND (avatar_y_pos - size < life_y_pos + size) AND (avatar_y_pos + size > life_y_pos - size)) then
+		-- collision with extra life token, add life --
+		lives_counter <= lives_counter + 1;
+		life_y_pos <= life_size;
+		life_x_pos <= conv_std_logic_vector(800, 10);
+		toggle_life <= '1';
+	end if;
+		
 end process move_life;
 
 Move_avatar: process
