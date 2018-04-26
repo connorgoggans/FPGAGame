@@ -11,7 +11,9 @@ ENTITY multiple IS
 		move_left, move_right : IN STD_LOGIC;
 		score: out std_logic_vector(19 downto 0);
 		lives: out std_logic_vector(3 downto 0);
-		level: out std_logic_vector(3 downto 0)
+		level: out std_logic_vector(3 downto 0);
+		rand_pos: in std_logic_vector(9 downto 0);
+		clock: in std_logic
 		);
 END multiple;
 
@@ -135,7 +137,7 @@ BEGIN
 				if(y_positions(i) & '0') >= 960 - Size then
 					-- got to the end, re-gen coordinates
 					y_positions(i) <= Size;
-					x_positions(i) <= conv_std_logic_vector(rand, 10);
+					x_positions(i) <= conv_std_logic_vector(rand, 10);--rand_pos;
 					score_counter <= score_counter + score_multiplier;
 					score <= conv_std_logic_vector(score_counter, 20);
 				else
@@ -273,15 +275,25 @@ BEGIN
 			END IF;
 END process Move_avatar;
 
-Random: process(vert_sync)
-variable rand_num: integer := 20;   
+--Random: process(vert_sync)
+--variable rand_num: integer := 20;   
+--begin
+--	if(rand + rand_num >= 1280) then
+--		rand <= 20 + rand_num;
+--	else
+--		rand <= rand + rand_num;
+--	end if;
+--end process Random;		
+
+Random: process(clock)
+variable count: integer := 0;
 begin
-	if(rand + rand_num >= 1280) then
-		rand <= 20 + rand_num;
-	else
-		rand <= rand + rand_num;
+	if(rising_edge(clock)) then
+		count := count + 1;
+		rand <= (count mod 1280);
 	end if;
-end process Random;		
+end process Random;
+			
 
 
 --Collisions: process(vert_sync)
