@@ -4,19 +4,20 @@ USE  IEEE.STD_LOGIC_ARITH.all;
 USE  IEEE.STD_LOGIC_UNSIGNED.all;
 
 entity avatar is
-	port (move_left, move_right : IN STD_LOGIC;
-			pixel_row, pixel_column : IN std_logic_vector(9 DOWNTO 0);
-			Red : OUT std_logic;
-         Horiz_sync	: IN std_logic);
+	port (move_left, move_right 	: IN STD_LOGIC;
+		  pixel_row, pixel_column	: IN std_logic_vector(9 DOWNTO 0);
+		  Red 						: OUT std_logic;
+          Horiz_sync				: IN std_logic);
 end avatar;
 
 architecture behavior of avatar is
-	SIGNAL Ball_on, Direction			: std_logic;
-	SIGNAL Size 						: std_logic_vector(9 DOWNTO 0);  
-	SIGNAL Ball_X_pos		: std_logic_vector(9 DOWNTO 0) := "0101000000";
-	SIGNAL Ball_Y_pos		: std_logic_vector(9 DOWNTO 0) := "0000000000";
 	
-begin
+SIGNAL Ball_on, Direction	: std_logic;
+SIGNAL Size 				: std_logic_vector(9 DOWNTO 0);  
+SIGNAL Ball_X_pos			: std_logic_vector(9 DOWNTO 0) := "0101000000";
+SIGNAL Ball_Y_pos			: std_logic_vector(9 DOWNTO 0) := "0000000000";
+	
+BEGIN
   
 Size <= CONV_STD_LOGIC_VECTOR(20,10);
 Ball_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
