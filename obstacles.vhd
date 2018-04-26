@@ -117,8 +117,6 @@ BEGIN
 
 	VGA_HS <= horiz_sync_int;
 	VGA_VS <= vert_sync_int;
-	
-	
 
 
 	U1: VGA_SYNC_module PORT MAP

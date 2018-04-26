@@ -51,6 +51,8 @@ Size <= CONV_STD_LOGIC_VECTOR(20,10);
 
 avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
 
+level <= conv_std_logic_vector(0, 4);
+
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
 	Red <=  NOT Ball_on;
@@ -126,6 +128,53 @@ BEGIN
 				end if;
 		end loop;
 		end if;
+		
+		if ((avatar_x_pos - size < x_positions(0) + size) AND (avatar_x_pos + size > x_positions(0) - size) 
+		AND (avatar_y_pos - size < y_positions(0) + size) AND (avatar_y_pos + size > y_positions(0) - size)) then
+			collide <='1';
+			if(lives_counter > 0) then
+				lives_counter <= lives_counter - 1;
+			end if;
+			y_positions(0) <= size;
+			x_positions(0) <= conv_std_logic_vector(rand, 10);
+		elsif((avatar_x_pos - size < x_positions(1) + size) AND (avatar_x_pos + size > x_positions(1) - size) 
+		AND (avatar_y_pos - size < y_positions(1) + size) AND (avatar_y_pos + size > y_positions(1) - size)) then
+			collide <= '1';
+			if(lives_counter > 0) then
+				lives_counter <= lives_counter - 1;
+			end if;
+			y_positions(1) <= size;
+			x_positions(1) <= conv_std_logic_vector(rand, 10);
+		elsif((avatar_x_pos - size < x_positions(2) + size) AND (avatar_x_pos + size > x_positions(2) - size) 
+		AND (avatar_y_pos - size < y_positions(2) + size) AND (avatar_y_pos + size > y_positions(2) - size)) then
+			collide <= '1';
+			if(lives_counter > 0) then
+				lives_counter <= lives_counter - 1;
+			end if;
+			y_positions(2) <= size;
+			x_positions(2) <= conv_std_logic_vector(rand, 10);
+		elsif((avatar_x_pos - size < x_positions(3) + size) AND (avatar_x_pos + size > x_positions(3) - size) 
+		AND (avatar_y_pos - size < y_positions(3) + size) AND (avatar_y_pos + size > y_positions(3) - size)) then
+			collide <= '1';
+			if(lives_counter > 0) then
+				lives_counter <= lives_counter - 1;
+			end if;
+			y_positions(3) <= size;
+			x_positions(3) <= conv_std_logic_vector(rand, 10);
+		elsif((avatar_x_pos - size < x_positions(4) + size) AND (avatar_x_pos + size > x_positions(4) - size) 
+		AND (avatar_y_pos - size < y_positions(4) + size) AND (avatar_y_pos + size > y_positions(4) - size)) then
+			collide <= '1';
+			if(lives_counter > 0) then
+				lives_counter <= lives_counter - 1;
+			end if;
+			y_positions(4) <= size;
+			x_positions(4) <= conv_std_logic_vector(rand, 10);
+		else
+			collide <= '0';
+		end if;
+		
+		--write to the lives
+		lives <= conv_std_logic_vector(lives_counter, 4);
 			
 END process Move_Ball;
 
@@ -156,37 +205,43 @@ begin
 end process Random;		
 
 
-Collisions: process(vert_sync)
-begin
+--Collisions: process(vert_sync)
+--begin
+--
+--if ((avatar_x_pos - size < x_positions(0) + size) AND (avatar_x_pos + size > x_positions(0) - size) 
+--AND (avatar_y_pos - size < y_positions(0) + size) AND (avatar_y_pos + size > y_positions(0) - size)) then
+--	collide <='1';
+--	lives_counter <= lives_counter - 1;
+--	lives <= conv_std_logic_vector(lives_counter, 4);
+--	y_positions(0) <= size;
+--	x_positions(0) <= conv_std_logic_vector(rand, 10);
+--elsif((avatar_x_pos - size < x_positions(1) + size) AND (avatar_x_pos + size > x_positions(1) - size) 
+--AND (avatar_y_pos - size < y_positions(1) + size) AND (avatar_y_pos + size > y_positions(1) - size)) then
+--	collide <= '1';
+--elsif((avatar_x_pos - size < x_positions(2) + size) AND (avatar_x_pos + size > x_positions(2) - size) 
+--AND (avatar_y_pos - size < y_positions(2) + size) AND (avatar_y_pos + size > y_positions(2) - size)) then
+--	collide <= '1';
+--elsif((avatar_x_pos - size < x_positions(3) + size) AND (avatar_x_pos + size > x_positions(3) - size) 
+--AND (avatar_y_pos - size < y_positions(3) + size) AND (avatar_y_pos + size > y_positions(3) - size)) then
+--	collide <= '1';
+--elsif((avatar_x_pos - size < x_positions(4) + size) AND (avatar_x_pos + size > x_positions(4) - size) 
+--AND (avatar_y_pos - size < y_positions(4) + size) AND (avatar_y_pos + size > y_positions(4) - size)) then
+--	collide <= '1';
+--else
+--	collide <= '0';
+--end if;
+--
+--end process Collisions;
 
-if ((avatar_x_pos - size < x_positions(0) + size) AND (avatar_x_pos + size > x_positions(0) - size) 
-AND (avatar_y_pos - size < y_positions(0) + size) AND (avatar_y_pos + size > y_positions(0) - size)) then
-	collide <='1';
-elsif((avatar_x_pos - size < x_positions(1) + size) AND (avatar_x_pos + size > x_positions(1) - size) 
-AND (avatar_y_pos - size < y_positions(1) + size) AND (avatar_y_pos + size > y_positions(1) - size)) then
-	collide <= '1';
-elsif((avatar_x_pos - size < x_positions(2) + size) AND (avatar_x_pos + size > x_positions(2) - size) 
-AND (avatar_y_pos - size < y_positions(2) + size) AND (avatar_y_pos + size > y_positions(2) - size)) then
-	collide <= '1';
-elsif((avatar_x_pos - size < x_positions(3) + size) AND (avatar_x_pos + size > x_positions(3) - size) 
-AND (avatar_y_pos - size < y_positions(3) + size) AND (avatar_y_pos + size > y_positions(3) - size)) then
-	collide <= '1';
-elsif((avatar_x_pos - size < x_positions(4) + size) AND (avatar_x_pos + size > x_positions(4) - size) 
-AND (avatar_y_pos - size < y_positions(4) + size) AND (avatar_y_pos + size > y_positions(4) - size)) then
-	collide <= '1';
-else
-	collide <= '0';
-end if;
-
-end process Collisions;
-
-Scorekeeping: process(collide)
-begin
---track collisions and lives here
-	if(lives_counter > 0) then
-		lives_counter <= lives_counter - 1;
-		lives <= conv_std_logic_vector(lives_counter, 4);
-	end if;
-end process Scorekeeping;
+--Scorekeeping: process(collide)
+--begin
+----track collisions and lives here
+--if(collide'event and collide = '1') then
+--	if(lives_counter > 0) then
+--		lives_counter <= lives_counter - 1;
+--		lives <= conv_std_logic_vector(lives_counter, 4);
+--	end if;
+--end if;
+--end process Scorekeeping;
 
 end behavior;
