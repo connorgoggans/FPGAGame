@@ -29,9 +29,9 @@ signal y_motions : motions;
 signal rand: integer := 0;
 signal isStart: std_logic := '1';
 signal ball_on: std_logic;
-signal new_cord: std_logic_vector(9 downto 0);
-signal rand_speed: std_logic_vector(9 downto 0);
-signal counter: std_logic := '1';
+--signal new_cord: std_logic_vector(9 downto 0);
+--signal rand_speed: std_logic_vector(9 downto 0);
+--signal counter: std_logic := '1';
 
 signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
 signal avatar_y_pos : std_logic_vector(9 downto 0);
@@ -58,8 +58,6 @@ Size <= CONV_STD_LOGIC_VECTOR(20,10);
 life_Size <= CONV_STD_LOGIC_VECTOR(10,10);
 
 avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
-
-level <= conv_std_logic_vector(0, 4);
 
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
@@ -113,23 +111,23 @@ BEGIN
 				if(i = 0) then
 					y_positions(i) <= conv_std_logic_vector(20, 10);
 					x_positions(i) <= conv_std_logic_vector(20, 10);
-					y_motions(i) <= conv_std_logic_vector(2,10);
+					y_motions(i) <= conv_std_logic_vector(3,10);
 				elsif(i = 1) then
 					y_positions(i) <= conv_std_logic_vector(60, 10);
 					x_positions(i) <= conv_std_logic_vector(60, 10);
-					y_motions(i) <= conv_std_logic_vector(3,10);
+					y_motions(i) <= conv_std_logic_vector(4,10);
 				elsif(i = 2) then
 					y_positions(i) <= conv_std_logic_vector(100, 10);
 					x_positions(i) <= conv_std_logic_vector(100, 10);
-					y_motions(i) <= conv_std_logic_vector(1,10);
+					y_motions(i) <= conv_std_logic_vector(2,10);
 				elsif(i = 3) then 
 					y_positions(i) <= conv_std_logic_vector(140, 10);
 					x_positions(i) <= conv_std_logic_vector(140, 10);
-					y_motions(i) <= conv_std_logic_vector(4,10);
+					y_motions(i) <= conv_std_logic_vector(5,10);
 				else
 					y_positions(i) <= conv_std_logic_vector(180, 10);
 					x_positions(i) <= conv_std_logic_vector(180, 10);
-					y_motions(i) <= conv_std_logic_vector(5,10);
+					y_motions(i) <= conv_std_logic_vector(6,10);
 				end if;
 			end loop;
 			life_y_pos <= life_size;
@@ -197,6 +195,49 @@ BEGIN
 		
 		--write to the lives
 		lives <= conv_std_logic_vector(lives_counter, 4);
+		
+		if(lives_counter <= 0) then
+			y_motions(0) <= conv_std_logic_vector(0, 10);
+			y_motions(1) <= conv_std_logic_vector(0, 10);
+			y_motions(2) <= conv_std_logic_vector(0, 10);
+			y_motions(3) <= conv_std_logic_vector(0, 10);
+			y_motions(4) <= conv_std_logic_vector(0, 10);
+		end if;
+		
+		if(score_counter = 400) then
+			y_motions(0) <= conv_std_logic_vector(4, 10);
+			y_motions(1) <= conv_std_logic_vector(5, 10);
+			y_motions(2) <= conv_std_logic_vector(3, 10);
+			y_motions(3) <= conv_std_logic_vector(6, 10);
+			y_motions(4) <= conv_std_logic_vector(7, 10);
+			level_counter <= 2;
+			level <= conv_std_logic_vector(level_counter, 4);
+		elsif(score_counter = 800) then
+			y_motions(0) <= conv_std_logic_vector(5, 10);
+			y_motions(1) <= conv_std_logic_vector(6, 10);
+			y_motions(2) <= conv_std_logic_vector(4, 10);
+			y_motions(3) <= conv_std_logic_vector(7, 10);
+			y_motions(4) <= conv_std_logic_vector(8, 10);
+			level_counter <= 3;
+			level <= conv_std_logic_vector(level_counter, 4);
+		elsif(score_counter = 1200) then
+			y_motions(0) <= conv_std_logic_vector(6, 10);
+			y_motions(1) <= conv_std_logic_vector(7, 10);
+			y_motions(2) <= conv_std_logic_vector(5, 10);
+			y_motions(3) <= conv_std_logic_vector(8, 10);
+			y_motions(4) <= conv_std_logic_vector(9, 10);
+			level_counter <= 4;
+			level <= conv_std_logic_vector(level_counter, 4);
+		elsif(score_counter = 1600) then
+			y_motions(0) <= conv_std_logic_vector(7, 10);
+			y_motions(1) <= conv_std_logic_vector(8, 10);
+			y_motions(2) <= conv_std_logic_vector(6, 10);
+			y_motions(3) <= conv_std_logic_vector(9, 10);
+			y_motions(4) <= conv_std_logic_vector(10, 10);
+			level_counter <= 5;
+			level <= conv_std_logic_vector(level_counter, 4);
+		end if;
+			
 			
 END process Move_Ball;
 
