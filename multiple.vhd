@@ -3,36 +3,33 @@ USE IEEE.STD_LOGIC_1164.all;
 USE  IEEE.STD_LOGIC_ARITH.all;
 USE  IEEE.STD_LOGIC_UNSIGNED.all;
 
-
 ENTITY multiple IS
-
    PORT(pixel_row, pixel_column	: in std_logic_vector(9 DOWNTO 0);
-        Red, Green,Blue 		: out std_logic;
-        Vert_sync				: in std_logic;
-		move_left, move_right	: in std_logic;
-		score					: out std_logic_vector(19 downto 0);
-		lives					: out std_logic_vector(3 downto 0);
-		level					: out std_logic_vector(3 downto 0);
-		clock					: in std_logic;
-		reset					: in std_logic
+        Red, Green,Blue 			: out std_logic;
+        Vert_sync						: in std_logic;
+		  move_left, move_right		: in std_logic;
+		  score							: out std_logic_vector(19 downto 0);
+		  lives							: out std_logic_vector(3 downto 0);
+		  level							: out std_logic_vector(3 downto 0);
+		  clock							: in std_logic;
+		  reset							: in std_logic
 		);
 END multiple;
 
 
 architecture behavior of multiple is
 
+-- type definitions for obstacle coordinates and motion --
 type coordArray is array (5 downto 0) of std_logic_vector(9 downto 0);
 type motions is array (5 downto 0) of std_logic_vector(9 downto 0);
-type spawnsArray is array(1280 downto 0) of integer;
 
-
+-- signals to keep track of obstacles --
 SIGNAL Size : std_logic_vector(9 DOWNTO 0);  
 signal y_positions: coordArray;
 signal x_positions: coordArray;
 signal y_motions : motions;
 signal isStart: std_logic := '1';
 signal ball_on: std_logic;
-
 
 -- signals to keep track of player's avatar --
 signal avatar_x_pos		: std_logic_vector(9 downto 0) := "0101000000";
@@ -45,20 +42,13 @@ signal life_x_pos		: std_logic_vector(9 downto 0) := conv_std_logic_vector(70, 1
 signal life_y_pos		: std_logic_vector(9 downto 0) := life_size;
 signal life_on			: std_logic;
 signal life_speed		: std_logic_vector(9 downto 0):= conv_std_logic_vector(4,10);
-signal toggle_life		: std_logic := '0';
+signal toggle_life	: std_logic := '0';
 
 -- signals to keep track of player status --
 signal score_counter	: integer := 0;
 signal lives_counter	: integer := 3;
 signal level_counter	: integer := 0;
 signal score_multiplier	: integer := 10;
-
--- signal to store random number --
-signal rand				: integer := 0;
-
--- signal for falling block spawns --
-signal spawns			: spawnsArray;
-signal counter			: integer := 0;
 
 -- lfsr signals --
 signal ce , lfsr_done, d0 :  std_logic;
@@ -73,7 +63,6 @@ life_Size <= CONV_STD_LOGIC_VECTOR(10,10);
 
 -- LFSR D0 set
 d0 <= lfsr(9) xnor lfsr(6);
-
 ce <= '1';
 
 
@@ -307,7 +296,6 @@ END process Move_Ball;
 
 Move_avatar: process
 BEGIN
-			-- Move ball once every vert sync
 	WAIT UNTIL vert_sync'event and vert_sync = '1';
 			IF move_left = '0' THEN
 				IF avatar_X_pos > Size THEN
@@ -319,26 +307,6 @@ BEGIN
 				END IF;
 			END IF;
 END process Move_avatar;
-
---Random: process(vert_sync)
---variable rand_num: integer := 20;   
---begin
---	if(rand + rand_num >= 1280) then
---		rand <= 20 + rand_num;
---	else
---		rand <= rand + rand_num;
---	end if;
---end process Random;		
-
---Random: process(clock)
---begin
---	rand <= spawns(counter);
---	if(counter >= 640) then
---		counter <= 0;
---	else
---		counter <= counter + 1;
---	end if;
---end process Random;
 
 process(lfsr) begin
 	if(lfsr = x"18D") then
