@@ -13,7 +13,6 @@ ENTITY multiple IS
 		score					: out std_logic_vector(19 downto 0);
 		lives					: out std_logic_vector(3 downto 0);
 		level					: out std_logic_vector(3 downto 0);
-		--rand_pos: in std_logic_vector(9 downto 0);
 		clock					: in std_logic;
 		reset					: in std_logic
 		);
@@ -24,6 +23,7 @@ architecture behavior of multiple is
 
 type coordArray is array (4 downto 0) of std_logic_vector(9 downto 0);
 type motions is array (4 downto 0) of std_logic_vector(9 downto 0);
+type spawnsArray is array(1280 downto 0) of integer;
 
 
 SIGNAL Size : std_logic_vector(9 DOWNTO 0);  
@@ -56,13 +56,25 @@ signal score_multiplier	: integer := 10;
 -- signal to store random number --
 signal rand				: integer := 0;
 
+-- signal for falling block spawns --
+signal spawns			: spawnsArray;
+signal counter			: integer := 0;
+
+-- lfsr signals --
+signal ce , rst, clk, lfsr_done, d0, lfsr_equal :  std_logic;
+signal lfsr: std_logic_vector (9 downto 0);
+
 BEGIN           
 	
 -- Set the size of the ball and extra life token
 Size <= CONV_STD_LOGIC_VECTOR(20,10);
 life_Size <= CONV_STD_LOGIC_VECTOR(10,10);
 
---avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
+-- LFSR D0 set
+d0 <= lfsr(9) xnor lfsr(6);
+
+ce <= '1';
+
 
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
@@ -112,6 +124,13 @@ BEGIN
 			-- Move ball once every vertical sync
 	WAIT UNTIL vert_sync'event and vert_sync = '1';
 		if(isStart = '1') then
+			life_speed <= CONV_STD_LOGIC_VECTOR(4,10);
+			
+			--init spawns
+			for i in spawns' range loop
+				spawns(i) <= i;
+			end loop;
+			
 			for i in y_positions' range loop
 				if(i = 0) then
 					y_positions(i) <= conv_std_logic_vector(20, 10);
@@ -142,9 +161,10 @@ BEGIN
 				if(y_positions(i) & '0') >= 960 - Size then
 					-- got to the end, re-gen coordinates
 					y_positions(i) <= Size;
-					x_positions(i) <= conv_std_logic_vector(rand, 10);--rand_pos;
+					x_positions(i) <= lfsr;
 					score_counter <= score_counter + score_multiplier;
-					score <= conv_std_logic_vector(score_counter, 20);
+					--score <= conv_std_logic_vector(score_counter, 20);
+					score <= (conv_std_logic_vector(0, 20)) or lfsr;
 				else
 					y_positions(i) <= y_positions(i) + y_motions(i);
 				end if;
@@ -157,7 +177,7 @@ BEGIN
 			if(toggle_life = '0') then
 				--put life on screen--
 				life_y_pos <= life_size;
-				life_x_pos <= conv_std_logic_vector(rand, 10);
+				life_x_pos <= lfsr;
 				life_speed <= conv_std_logic_vector(4,10);
 			else
 				--put life off screen--
@@ -176,35 +196,35 @@ BEGIN
 				lives_counter <= lives_counter - 1;
 			end if;
 			y_positions(0) <= size;
-			x_positions(0) <= conv_std_logic_vector(rand, 10);
+			x_positions(0) <= lfsr;
 		elsif((avatar_x_pos - size < x_positions(1) + size) AND (avatar_x_pos + size > x_positions(1) - size) 
 		AND (avatar_y_pos - size < y_positions(1) + size) AND (avatar_y_pos + size > y_positions(1) - size)) then
 			if(lives_counter > 0) then
 				lives_counter <= lives_counter - 1;
 			end if;
 			y_positions(1) <= size;
-			x_positions(1) <= conv_std_logic_vector(rand, 10);
+			x_positions(1) <= lfsr;
 		elsif((avatar_x_pos - size < x_positions(2) + size) AND (avatar_x_pos + size > x_positions(2) - size) 
 		AND (avatar_y_pos - size < y_positions(2) + size) AND (avatar_y_pos + size > y_positions(2) - size)) then
 			if(lives_counter > 0) then
 				lives_counter <= lives_counter - 1;
 			end if;
 			y_positions(2) <= size;
-			x_positions(2) <= conv_std_logic_vector(rand, 10);
+			x_positions(2) <= lfsr;
 		elsif((avatar_x_pos - size < x_positions(3) + size) AND (avatar_x_pos + size > x_positions(3) - size) 
 		AND (avatar_y_pos - size < y_positions(3) + size) AND (avatar_y_pos + size > y_positions(3) - size)) then
 			if(lives_counter > 0) then
 				lives_counter <= lives_counter - 1;
 			end if;
 			y_positions(3) <= size;
-			x_positions(3) <= conv_std_logic_vector(rand, 10);
+			x_positions(3) <= lfsr;
 		elsif((avatar_x_pos - size < x_positions(4) + size) AND (avatar_x_pos + size > x_positions(4) - size) 
 		AND (avatar_y_pos - size < y_positions(4) + size) AND (avatar_y_pos + size > y_positions(4) - size)) then
 			if(lives_counter > 0) then
 				lives_counter <= lives_counter - 1;
 			end if;
 			y_positions(4) <= size;
-			x_positions(4) <= conv_std_logic_vector(rand, 10);
+			x_positions(4) <= lfsr;
 		elsif ((avatar_x_pos - size < life_x_pos + size) AND (avatar_x_pos + size > life_x_pos - size) 
 		AND (avatar_y_pos - size < life_y_pos + size) AND (avatar_y_pos + size > life_y_pos - size)) then
 			-- collision with extra life token, add life --
@@ -223,7 +243,8 @@ BEGIN
 			y_motions(2) <= conv_std_logic_vector(0, 10);
 			y_motions(3) <= conv_std_logic_vector(0, 10);
 			y_motions(4) <= conv_std_logic_vector(0, 10);
-			if(reset = '1') then
+			life_speed <= conv_std_logic_vector(0, 10);
+			if(reset = '0') then
 				lives_counter <= 3;
 				isStart <= '1';
 				level_counter <= 1;
@@ -282,65 +303,48 @@ BEGIN
 			END IF;
 END process Move_avatar;
 
-Random: process(vert_sync)
-variable rand_num: integer := 20;   
-begin
-	if(rand + rand_num >= 1280) then
-		rand <= 20 + rand_num;
-	else
-		rand <= rand + rand_num;
-	end if;
-end process Random;		
+--Random: process(vert_sync)
+--variable rand_num: integer := 20;   
+--begin
+--	if(rand + rand_num >= 1280) then
+--		rand <= 20 + rand_num;
+--	else
+--		rand <= rand + rand_num;
+--	end if;
+--end process Random;		
 
 --Random: process(clock)
 --begin
---	if(rising_edge(clock)) then
---		rand <= rand + 1;
---		if(rand >= 1280) then
---			rand <= 0;
---		end if;
+--	rand <= spawns(counter);
+--	if(counter >= 640) then
+--		counter <= 0;
+--	else
+--		counter <= counter + 1;
 --	end if;
 --end process Random;
+
+process(lfsr) begin
+	if(lfsr = x"18D") then
+		lfsr_equal <= '1';
+	else
+		lfsr_equal <= '0';
+	end if;
+end process;
+
+process (clk,rst) begin
+	if (rst = '1') then
+	  lfsr <= b"0000000000";
+	  lfsr_done <= '0';
+	elsif (clk'EVENT and clk = '1') then
+	  lfsr_done <= lfsr_equal;
+	  if (ce = '1') then
+		 if(lfsr_equal = '1') then
+			lfsr <= b"0000000000";
+		 else
+			lfsr <= lfsr(8 downto 0) & d0;
+		 end if;
+	  end if;
+	end if;
+end process;
 			
-
-
---Collisions: process(vert_sync)
---begin
---
---if ((avatar_x_pos - size < x_positions(0) + size) AND (avatar_x_pos + size > x_positions(0) - size) 
---AND (avatar_y_pos - size < y_positions(0) + size) AND (avatar_y_pos + size > y_positions(0) - size)) then
---	collide <='1';
---	lives_counter <= lives_counter - 1;
---	lives <= conv_std_logic_vector(lives_counter, 4);
---	y_positions(0) <= size;
---	x_positions(0) <= conv_std_logic_vector(rand, 10);
---elsif((avatar_x_pos - size < x_positions(1) + size) AND (avatar_x_pos + size > x_positions(1) - size) 
---AND (avatar_y_pos - size < y_positions(1) + size) AND (avatar_y_pos + size > y_positions(1) - size)) then
---	collide <= '1';
---elsif((avatar_x_pos - size < x_positions(2) + size) AND (avatar_x_pos + size > x_positions(2) - size) 
---AND (avatar_y_pos - size < y_positions(2) + size) AND (avatar_y_pos + size > y_positions(2) - size)) then
---	collide <= '1';
---elsif((avatar_x_pos - size < x_positions(3) + size) AND (avatar_x_pos + size > x_positions(3) - size) 
---AND (avatar_y_pos - size < y_positions(3) + size) AND (avatar_y_pos + size > y_positions(3) - size)) then
---	collide <= '1';
---elsif((avatar_x_pos - size < x_positions(4) + size) AND (avatar_x_pos + size > x_positions(4) - size) 
---AND (avatar_y_pos - size < y_positions(4) + size) AND (avatar_y_pos + size > y_positions(4) - size)) then
---	collide <= '1';
---else
---	collide <= '0';
---end if;
---
---end process Collisions;
-
---Scorekeeping: process(collide)
---begin
-----track collisions and lives here
---if(collide'event and collide = '1') then
---	if(lives_counter > 0) then
---		lives_counter <= lives_counter - 1;
---		lives <= conv_std_logic_vector(lives_counter, 4);
---	end if;
---end if;
---end process Scorekeeping;
-
 end behavior;

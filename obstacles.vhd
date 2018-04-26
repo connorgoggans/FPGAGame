@@ -73,7 +73,6 @@ COMPONENT multiple
 		 lives	 					: OUT std_logic_vector(3 downto 0);
 		 level   					: OUT std_logic_vector(3 downto 0);
 		 reset						: IN std_logic
-		 --rand_pos : in std_logic_vector(9 downto 0)
 		);
    
 END COMPONENT;
@@ -105,17 +104,6 @@ SIGNAL horiz_sync_int 	: std_logic;
 SIGNAL pixel_clock_int 	: std_logic;
 SIGNAL pixel_row_int 	: std_logic_vector(9 DOWNTO 0); 
 SIGNAL pixel_column_int	: std_logic_vector(9 DOWNTO 0);
-
---component lfsr_9_bit
---	port
---		(i_clk    : in std_logic;
---		 i_rstb       : in std_logic;
---		 i_sync_reset  : in std_logic;
---       i_seed          : in std_logic_vector(9 downto 0);
---       i_en            : in std_logic;
---       o_lsfr          : out std_logic_vector(9 downto 0)
---		 );
---end component;
 
 
 signal lives_counter 	: std_logic_vector(3 downto 0);
@@ -162,7 +150,6 @@ BEGIN
 		 level			=> level_counter,
 		 lives			=> lives_counter,
 		 reset			=> KEY(3)
-		 --rand_pos		=> rand
 		);
 
 	LCD_ON   <= '1';
@@ -180,14 +167,5 @@ BEGIN
 		 LCD_RW				=>	LCD_RW,
 		 DATA_BUS			=>	LCD_DATA
 		);
-		
---		U4: lfsr_9_bit port map
---		(i_clk    => CLOCK_50,
---		 i_rstb       => '1',
---		 i_sync_reset  => '0',
---       i_seed          => "0101010101",
---       i_en            => '1',
---       o_lsfr          => rand
---		 );
 
 END structural;
