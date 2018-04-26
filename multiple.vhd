@@ -21,35 +21,36 @@ architecture behavior of multiple is
 type coordArray is array (4 downto 0) of std_logic_vector(9 downto 0);
 type motions is array (4 downto 0) of std_logic_vector(9 downto 0);
 
-SIGNAL Size : std_logic_vector(9 DOWNTO 0);  
-SIGNAL life_Size : std_logic_vector(9 DOWNTO 0);  
-signal y_positions: coordArray;
-signal x_positions: coordArray;
-signal y_motions : motions;
-signal rand: integer := 0;
-signal isStart: std_logic := '1';
-signal ball_on: std_logic;
---signal new_cord: std_logic_vector(9 downto 0);
---signal rand_speed: std_logic_vector(9 downto 0);
---signal counter: std_logic := '1';
+-- signals to keep track of falling obstacles --
+signal Size				: std_logic_vector(9 DOWNTO 0);    
+signal y_positions		: coordArray;
+signal x_positions		: coordArray;
+signal y_motions		: motions;
+signal isStart			: std_logic := '1';
+signal ball_on			: std_logic;
 
-signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
-signal avatar_y_pos : std_logic_vector(9 downto 0);
-signal avatar_on: std_logic;
+-- signals to keep track of player's avatar --
+signal avatar_x_pos		: std_logic_vector(9 downto 0) := "0101000000";
+signal avatar_y_pos		: std_logic_vector(9 downto 0);
+signal avatar_on		: std_logic;
 
-signal life_x_pos : std_logic_vector(9 downto 0) := conv_std_logic_vector(70, 10); 
-signal life_y_pos : std_logic_vector(9 downto 0) := life_size;
-signal life_on: std_logic;
-signal life_speed :std_logic_vector(9 downto 0):= conv_std_logic_vector(4,10);
-signal toggle_life:std_logic := '0';
+-- signals to keep track of extra life token --
+signal life_Size		: std_logic_vector(9 DOWNTO 0);
+signal life_x_pos		: std_logic_vector(9 downto 0) := conv_std_logic_vector(70, 10); 
+signal life_y_pos		: std_logic_vector(9 downto 0) := life_size;
+signal life_on			: std_logic;
+signal life_speed		: std_logic_vector(9 downto 0):= conv_std_logic_vector(4,10);
+signal toggle_life		: std_logic := '0';
 
-signal score_counter : integer := 0;
-signal lives_counter : integer := 3;
-signal level_counter : integer := 0;
-
+-- signals to keep track of player status --
+signal score_counter	: integer := 0;
+signal lives_counter	: integer := 3;
+signal level_counter	: integer := 0;
 signal score_multiplier: integer := 10;
 
-signal collide : std_logic;
+-- signal to store random number --
+signal rand				: integer := 0;
+
 
 BEGIN           
 	
@@ -186,7 +187,13 @@ BEGIN
 			end if;
 			y_positions(4) <= size;
 			x_positions(4) <= conv_std_logic_vector(rand, 10);
-		else
+		elsif ((avatar_x_pos - size < life_x_pos + size) AND (avatar_x_pos + size > life_x_pos - size) 
+		AND (avatar_y_pos - size < life_y_pos + size) AND (avatar_y_pos + size > life_y_pos - size)) then
+			-- collision with extra life token, add life --
+			lives_counter <= lives_counter + 1;
+			life_y_pos <= life_size;
+			life_x_pos <= conv_std_logic_vector(800, 10);
+			toggle_life <= '1';
 			collide <= '0';
 		end if;
 		
@@ -258,16 +265,6 @@ BEGIN
 	else
 		life_y_pos <= life_y_pos + life_speed;
 	end if;
-
-	if ((avatar_x_pos - size < life_x_pos + size) AND (avatar_x_pos + size > life_x_pos - size) 
-		AND (avatar_y_pos - size < life_y_pos + size) AND (avatar_y_pos + size > life_y_pos - size)) then
-		-- collision with extra life token, add life --
-		lives_counter <= lives_counter + 1;
-		life_y_pos <= life_size;
-		life_x_pos <= conv_std_logic_vector(800, 10);
-		toggle_life <= '1';
-	end if;
-		
 end process move_life;
 
 Move_avatar: process
