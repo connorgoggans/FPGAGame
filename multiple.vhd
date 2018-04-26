@@ -22,6 +22,7 @@ type coordArray is array (4 downto 0) of std_logic_vector(9 downto 0);
 type motions is array (4 downto 0) of std_logic_vector(9 downto 0);
 
 SIGNAL Size : std_logic_vector(9 DOWNTO 0);  
+SIGNAL life_Size : std_logic_vector(9 DOWNTO 0);  
 signal y_positions: coordArray;
 signal x_positions: coordArray;
 signal y_motions : motions;
@@ -36,6 +37,11 @@ signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
 signal avatar_y_pos : std_logic_vector(9 downto 0);
 signal avatar_on: std_logic;
 
+signal life_x_pos, life_y_pos : std_logic_vector(9 downto 0);
+signal life_on: std_logic;
+signal life_speed :std_logic_vector(9 downto 0);
+signal toggle_life:std_logic;
+
 signal score_counter : integer := 0;
 signal lives_counter : integer := 3;
 signal level_counter : integer := 0;
@@ -43,17 +49,19 @@ signal level_counter : integer := 0;
 signal score_multiplier: integer := 10;
 
 signal collide : std_logic;
+signal life_collide: std_logic;
 
 BEGIN           
 	
 -- Set the size of the ball
 Size <= CONV_STD_LOGIC_VECTOR(20,10);
+life_Size <= CONV_STD_LOGIC_VECTOR(10,10);
 
 avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
 
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
-	Red <=  NOT Ball_on;
+	Red <=  NOT Ball_on and not life_on;
 	Green <= NOT Ball_on AND NOT avatar_on;
 	Blue <=  NOT avatar_on;
 	
@@ -80,7 +88,18 @@ begin
  		avatar_on <= '1';
  	ELSE
  		avatar_on <= '0';
-END IF;
+	END IF;
+
+	-- extra life token --
+	IF ('0' & life_X_pos <= pixel_column + life_Size) AND
+ 			-- compare positive numbers only
+ 	(life_X_pos + life_Size >= '0' & pixel_column) AND
+ 	('0' & life_Y_pos <= pixel_row + life_Size) AND
+ 	(life_Y_pos + life_Size >= '0' & pixel_row ) THEN
+ 		life_on <= '1';
+ 	ELSE
+ 		life_on <= '0';
+	END IF;
 end process VGA;
 
 Move_Ball: process
@@ -111,6 +130,9 @@ BEGIN
 					y_motions(i) <= conv_std_logic_vector(6,10);
 				end if;
 			end loop;
+			life_y_pos <= life_size;
+			life_x_pos <= conv_std_logic_vector(1300, 10);
+			life_speed <= conv_std_logic_vector(1,10);
 			isStart <= '0';
 		else
 			for i in y_positions' range loop
@@ -218,6 +240,28 @@ BEGIN
 			
 			
 END process Move_Ball;
+
+move_life: process
+BEGIN
+	WAIT UNTIL vert_sync'event and vert_sync = '1';
+	if(life_y_pos & '0') >= 960 - life_Size then
+		-- got to the end, re-gen coordinates
+		if(toggle_life = '0') then
+			--put life on screen--
+			life_y_pos <= life_size;
+			life_x_pos <= conv_std_logic_vector(rand, 10);
+			life_speed <= conv_std_logic_vector(4,10);
+		else
+			--put life off screen--
+			life_y_pos <= life_size;
+			life_x_pos <= conv_std_logic_vector(1300, 10);
+			life_speed <= conv_std_logic_vector(1,10);
+		end if;
+		toggle_life <= not toggle_life;
+	else
+		life_y_pos <= life_y_pos + life_speed;
+	end if;
+end process move_life;
 
 Move_avatar: process
 BEGIN
