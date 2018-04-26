@@ -21,8 +21,8 @@ END multiple;
 
 architecture behavior of multiple is
 
-type coordArray is array (4 downto 0) of std_logic_vector(9 downto 0);
-type motions is array (4 downto 0) of std_logic_vector(9 downto 0);
+type coordArray is array (5 downto 0) of std_logic_vector(9 downto 0);
+type motions is array (5 downto 0) of std_logic_vector(9 downto 0);
 type spawnsArray is array(1280 downto 0) of integer;
 
 
@@ -61,7 +61,8 @@ signal spawns			: spawnsArray;
 signal counter			: integer := 0;
 
 -- lfsr signals --
-signal ce , rst, clk, lfsr_done, d0, lfsr_equal :  std_logic;
+signal ce , lfsr_done, d0 :  std_logic;
+signal lfsr_equal : std_logic := '0';
 signal lfsr: std_logic_vector (9 downto 0);
 
 BEGIN           
@@ -148,10 +149,14 @@ BEGIN
 					y_positions(i) <= conv_std_logic_vector(140, 10);
 					x_positions(i) <= conv_std_logic_vector(140, 10);
 					y_motions(i) <= conv_std_logic_vector(5,10);
-				else
+				elsif(i = 4) then
 					y_positions(i) <= conv_std_logic_vector(180, 10);
 					x_positions(i) <= conv_std_logic_vector(180, 10);
 					y_motions(i) <= conv_std_logic_vector(6,10);
+				else
+					y_positions(i) <= conv_std_logic_vector(220, 10);
+					x_positions(i) <= conv_std_logic_vector(220, 10);
+					y_motions(i) <= conv_std_logic_vector(7,10);
 				end if;
 			end loop;
 			isStart <= '0';
@@ -163,8 +168,8 @@ BEGIN
 					y_positions(i) <= Size;
 					x_positions(i) <= lfsr;
 					score_counter <= score_counter + score_multiplier;
-					--score <= conv_std_logic_vector(score_counter, 20);
-					score <= (conv_std_logic_vector(0, 20)) or lfsr;
+					score <= conv_std_logic_vector(score_counter, 20);
+					--score <= (conv_std_logic_vector(0, 20)) or lfsr;
 				else
 					y_positions(i) <= y_positions(i) + y_motions(i);
 				end if;
@@ -225,6 +230,13 @@ BEGIN
 			end if;
 			y_positions(4) <= size;
 			x_positions(4) <= lfsr;
+		elsif((avatar_x_pos - size < x_positions(5) + size) AND (avatar_x_pos + size > x_positions(5) - size) 
+		AND (avatar_y_pos - size < y_positions(5) + size) AND (avatar_y_pos + size > y_positions(5) - size)) then
+			if(lives_counter > 0) then
+				lives_counter <= lives_counter - 1;
+			end if;
+			y_positions(5) <= size;
+			x_positions(5) <= lfsr;
 		elsif ((avatar_x_pos - size < life_x_pos + size) AND (avatar_x_pos + size > life_x_pos - size) 
 		AND (avatar_y_pos - size < life_y_pos + size) AND (avatar_y_pos + size > life_y_pos - size)) then
 			-- collision with extra life token, add life --
@@ -243,6 +255,7 @@ BEGIN
 			y_motions(2) <= conv_std_logic_vector(0, 10);
 			y_motions(3) <= conv_std_logic_vector(0, 10);
 			y_motions(4) <= conv_std_logic_vector(0, 10);
+			y_motions(5) <= conv_std_logic_vector(0, 10);
 			life_speed <= conv_std_logic_vector(0, 10);
 			if(reset = '0') then
 				lives_counter <= 3;
@@ -252,36 +265,40 @@ BEGIN
 			end if;
 		end if;
 		
-		if(score_counter = 400) then
+		if(score_counter = 500) then
 			y_motions(0) <= conv_std_logic_vector(4, 10);
 			y_motions(1) <= conv_std_logic_vector(5, 10);
 			y_motions(2) <= conv_std_logic_vector(3, 10);
 			y_motions(3) <= conv_std_logic_vector(6, 10);
 			y_motions(4) <= conv_std_logic_vector(7, 10);
+			y_motions(5) <= conv_std_logic_vector(8, 10);
 			level_counter <= 2;
 			level <= conv_std_logic_vector(level_counter, 4);
-		elsif(score_counter = 800) then
+		elsif(score_counter = 1100) then
 			y_motions(0) <= conv_std_logic_vector(5, 10);
 			y_motions(1) <= conv_std_logic_vector(6, 10);
 			y_motions(2) <= conv_std_logic_vector(4, 10);
 			y_motions(3) <= conv_std_logic_vector(7, 10);
 			y_motions(4) <= conv_std_logic_vector(8, 10);
+			y_motions(5) <= conv_std_logic_vector(9, 10);
 			level_counter <= 3;
 			level <= conv_std_logic_vector(level_counter, 4);
-		elsif(score_counter = 1200) then
+		elsif(score_counter = 1800) then
 			y_motions(0) <= conv_std_logic_vector(6, 10);
 			y_motions(1) <= conv_std_logic_vector(7, 10);
 			y_motions(2) <= conv_std_logic_vector(5, 10);
 			y_motions(3) <= conv_std_logic_vector(8, 10);
 			y_motions(4) <= conv_std_logic_vector(9, 10);
+			y_motions(5) <= conv_std_logic_vector(10, 10);
 			level_counter <= 4;
 			level <= conv_std_logic_vector(level_counter, 4);
-		elsif(score_counter = 1600) then
+		elsif(score_counter = 2600) then
 			y_motions(0) <= conv_std_logic_vector(7, 10);
 			y_motions(1) <= conv_std_logic_vector(8, 10);
 			y_motions(2) <= conv_std_logic_vector(6, 10);
 			y_motions(3) <= conv_std_logic_vector(9, 10);
 			y_motions(4) <= conv_std_logic_vector(10, 10);
+			y_motions(5) <= conv_std_logic_vector(11, 10);
 			level_counter <= 5;
 			level <= conv_std_logic_vector(level_counter, 4);
 		end if;
@@ -331,11 +348,11 @@ process(lfsr) begin
 	end if;
 end process;
 
-process (clk,rst) begin
-	if (rst = '1') then
+process (clock,reset) begin
+	if (reset = '0') then
 	  lfsr <= b"0000000000";
 	  lfsr_done <= '0';
-	elsif (clk'EVENT and clk = '1') then
+	elsif (clock'EVENT and clock = '1') then
 	  lfsr_done <= lfsr_equal;
 	  if (ce = '1') then
 		 if(lfsr_equal = '1') then

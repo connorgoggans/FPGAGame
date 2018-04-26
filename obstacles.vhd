@@ -20,10 +20,6 @@ ENTITY obstacles IS
     -- Input switches
     
     SW 			: IN STD_LOGIC_VECTOR (17 downto 0);         -- DPDT switches
-	 
-	 -- LED
-	 
-	 LEDR		: OUT STD_Logic_vector (17 downto 0);
 
     -- VGA output
     
@@ -72,7 +68,8 @@ COMPONENT multiple
 		 score   					: OUT std_logic_vector(19 downto 0);
 		 lives	 					: OUT std_logic_vector(3 downto 0);
 		 level   					: OUT std_logic_vector(3 downto 0);
-		 reset						: IN std_logic
+		 reset						: IN std_logic;
+		 clock						: IN std_logic
 		);
    
 END COMPONENT;
@@ -149,7 +146,8 @@ BEGIN
 		 score			=> score_counter,
 		 level			=> level_counter,
 		 lives			=> lives_counter,
-		 reset			=> KEY(3)
+		 reset			=> KEY(3),
+		 clock			=> CLOCK_50
 		);
 
 	LCD_ON   <= '1';
