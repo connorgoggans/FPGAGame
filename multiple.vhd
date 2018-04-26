@@ -9,7 +9,9 @@ ENTITY multiple IS
         Red, Green,Blue 				: OUT std_logic;
         Vert_sync	: IN std_logic;
 		move_left, move_right : IN STD_LOGIC;
-		collide: out std_logic
+		score: out std_logic_vector(19 downto 0);
+		lives: out std_logic_vector(3 downto 0);
+		level: out std_logic_vector(3 downto 0)
 		);
 END multiple;
 
@@ -31,12 +33,16 @@ signal rand_speed: std_logic_vector(9 downto 0);
 signal counter: std_logic := '1';
 
 signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
-signal avatar_y_pos : std_logic_vector(9 downto 0) := "0000000000";
+signal avatar_y_pos : std_logic_vector(9 downto 0);
 signal avatar_on: std_logic;
 
+signal score_counter : integer := 0;
+signal lives_counter : integer := 3;
+signal level_counter : integer := 0;
 
-signal collision_detected: std_logic := '0';
+signal score_multiplier: integer := 10;
 
+signal collide : std_logic;
 
 BEGIN           
 	
@@ -62,27 +68,6 @@ begin
 			Ball_on <= '1';
 --		ELSE
 --			Ball_on <= '0';
-		end if;
-		
-		-- collision detection
---		IF (std_logic_vector(abs(signed(avatar_x_pos)-signed(x_positions(i)))) < 2 * size) AND
---		(std_logic_vector(abs(signed(avatar_y_pos)-signed(y_positions(i)))) < 2 * size)THEN
-			--collision -> deduct 1 life
-			
-		IF((avatar_x_pos - size <= x_positions(i) + size) AND (avatar_y_pos - size <= y_positions(i) + size)
-		   AND (avatar_x_pos + size >= x_positions(i) + size) AND (avatar_y_pos + size >= y_positions(i) + size)) OR
-		((avatar_x_pos + size >= x_positions(i) - size) AND (avatar_y_pos - size <= y_positions(i) + size)
-		   AND (avatar_x_pos - size <= x_positions(i) - size) AND (avatar_y_pos + size >= y_positions(i) + size)) OR
-		((avatar_x_pos - size <= x_positions(i) + size) AND (avatar_y_pos + size >= y_positions(i) - size)
-		   AND (avatar_x_pos + size >= x_positions(i) + size) AND (avatar_y_pos - size <= y_positions(i) - size)) OR
-		((avatar_x_pos + size >= x_positions(i) - size) AND (avatar_y_pos + size >= y_positions(i) - size)
-		   AND (avatar_x_pos - size <= x_positions(i) - size) AND (avatar_y_pos - size <= y_positions(i) - size)) THEN
-			-- collision detected -> deduct 1 life
-			--collision_detected <= '1';
-			collide <= '1';
-		else
-			collide <= '0';
-
 		end if;
 		
 	end loop;
@@ -134,6 +119,8 @@ BEGIN
 					-- got to the end, re-gen coordinates
 					y_positions(i) <= Size;
 					x_positions(i) <= conv_std_logic_vector(rand, 10);
+					score_counter <= score_counter + score_multiplier;
+					score <= conv_std_logic_vector(score_counter, 20);
 				else
 					y_positions(i) <= y_positions(i) + y_motions(i);
 				end if;
@@ -167,5 +154,39 @@ begin
 		rand <= rand + rand_num;
 	end if;
 end process Random;		
+
+
+Collisions: process(vert_sync)
+begin
+
+if ((avatar_x_pos - size < x_positions(0) + size) AND (avatar_x_pos + size > x_positions(0) - size) 
+AND (avatar_y_pos - size < y_positions(0) + size) AND (avatar_y_pos + size > y_positions(0) - size)) then
+	collide <='1';
+elsif((avatar_x_pos - size < x_positions(1) + size) AND (avatar_x_pos + size > x_positions(1) - size) 
+AND (avatar_y_pos - size < y_positions(1) + size) AND (avatar_y_pos + size > y_positions(1) - size)) then
+	collide <= '1';
+elsif((avatar_x_pos - size < x_positions(2) + size) AND (avatar_x_pos + size > x_positions(2) - size) 
+AND (avatar_y_pos - size < y_positions(2) + size) AND (avatar_y_pos + size > y_positions(2) - size)) then
+	collide <= '1';
+elsif((avatar_x_pos - size < x_positions(3) + size) AND (avatar_x_pos + size > x_positions(3) - size) 
+AND (avatar_y_pos - size < y_positions(3) + size) AND (avatar_y_pos + size > y_positions(3) - size)) then
+	collide <= '1';
+elsif((avatar_x_pos - size < x_positions(4) + size) AND (avatar_x_pos + size > x_positions(4) - size) 
+AND (avatar_y_pos - size < y_positions(4) + size) AND (avatar_y_pos + size > y_positions(4) - size)) then
+	collide <= '1';
+else
+	collide <= '0';
+end if;
+
+end process Collisions;
+
+Scorekeeping: process(collide)
+begin
+--track collisions and lives here
+	if(lives_counter > 0) then
+		lives_counter <= lives_counter - 1;
+		lives <= conv_std_logic_vector(lives_counter, 4);
+	end if;
+end process Scorekeeping;
 
 end behavior;

@@ -42,7 +42,9 @@ ENTITY LCD_Display IS
 -- *see LCD Controller's Datasheet for other graphics characters available
 --
 	PORT(reset, clk_50MHz			: IN	STD_LOGIC;
-		 Hex_Display_Data			: IN    STD_LOGIC_VECTOR((Num_Hex_Digits*4)-1 DOWNTO 0);
+		 Hex_Display_Lives	: IN  std_logic_vector(3 downto 0);
+		 Hex_Display_Level 	: IN  std_logic_vector(3 downto 0);
+		 Hex_Display_Score	: IN  std_logic_vector(19 downto 0);
 		 LCD_RS, LCD_E				: OUT	STD_LOGIC;
 		 LCD_RW						: OUT   STD_LOGIC;
 		 DATA_BUS					: INOUT	STD_LOGIC_VECTOR(7 DOWNTO 0));
@@ -69,6 +71,8 @@ SIGNAL CLK_400HZ_Enable,LCD_RW_INT : STD_LOGIC;
 SIGNAL Line1_chars, Line2_chars: STD_LOGIC_VECTOR(127 DOWNTO 0);
 --SIGNAL counter: integer := 0;
 
+--TODO: need to convert integer in port to logic vector 
+
 BEGIN
 
 LCD_display_string <= (
@@ -76,15 +80,19 @@ LCD_display_string <= (
 -- Enter Live Hex Data Values from hardware here
 -- LCD DISPLAYS THE FOLLOWING:
 ------------------------------
---| LIVES: 3         LEVEL: 1  |
---| SCORE: 0                   |
+--| LIVES: X         LEVEL: X  |
+--| SCORE: XXXXX               |
 ------------------------------
 -- Line 1
-X"4C",X"49",X"56",X"45",X"53",X"3A", X"33",X"20",
-X"4C",X"45",X"56",X"45",X"4C",X"3A", X"31",X"20",
+X"4C",X"49",X"56",X"45",X"53",X"3A", X"0" & Hex_Display_Lives(3 DOWNTO 0),X"20",
+X"4C",X"45",X"56",X"45",X"4C",X"3A", X"0" & Hex_Display_Level(3 DOWNTO 0),X"20",
 -- Line 2
-X"53",X"43",X"4F",X"52",X"45",X"3A",X"30",X"20",
-X"20",X"20",X"20",X"20",X"20",X"20",X"20",X"20");
+X"53",X"43",X"4F",X"52",X"45",X"3A",X"0" & Hex_Display_Score(19 DOWNTO 16),
+                                    X"0" & Hex_Display_Score(15 DOWNTO 12), 
+												X"0" & Hex_Display_Score(11 DOWNTO 8),
+										      X"0" & Hex_Display_Score(7 DOWNTO 4), 
+												X"0" & Hex_Display_Score(3 DOWNTO 0),
+                                    X"20",X"20",X"20",X"20",X"20");
 
 --
 

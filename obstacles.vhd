@@ -68,17 +68,13 @@ COMPONENT multiple
         Red, Green,Blue 				: OUT std_logic;
         Vert_sync	: IN std_logic;
 		  move_left, move_right: IN std_logic;
-		  collide : OUT std_logic
+		  score   : out std_logic_vector(19 downto 0);
+		  lives	 : out std_logic_vector(3 downto 0);
+		  level   : out std_logic_vector(3 downto 0)
 		  );
    
 END COMPONENT;
 
-component avatar
-	port (move_left, move_right : IN STD_LOGIC;
-			pixel_row, pixel_column : IN std_logic_vector(9 DOWNTO 0);
-			Red : OUT std_logic;
-         Horiz_sync	: IN std_logic);
-end component;
 
 COMPONENT LCD_Display
 
@@ -86,7 +82,9 @@ COMPONENT LCD_Display
 	
 	PORT(reset					: IN	STD_LOGIC;
 	     clk_50MHz				: IN	STD_LOGIC;
-		  Hex_Display_Data	: IN    STD_LOGIC_VECTOR((Num_Hex_Digits*4)-1 DOWNTO 0);
+		  Hex_Display_Lives	: IN    std_logic_vector(3 downto 0); --STD_LOGIC_VECTOR((Num_Hex_Digits*4)-1 DOWNTO 0);
+		  Hex_Display_Level	: IN 	std_logic_vector(3 downto 0);
+		  Hex_Display_Score	: IN std_logic_vector(19 downto 0);
 		  LCD_RS					: OUT	STD_LOGIC;
 		  LCD_E					: OUT	STD_LOGIC;
 		  LCD_RW					: OUT   STD_LOGIC;
@@ -105,8 +103,11 @@ SIGNAL vert_sync_int : STD_LOGIC;
 SIGNAL horiz_sync_int : STD_LOGIC; 
 SIGNAL pixel_clock_int : STD_LOGIC;
 SIGNAL pixel_row_int :STD_LOGIC_VECTOR(9 DOWNTO 0); 
-SIGNAL pixel_column_int :STD_LOGIC_VECTOR(9 DOWNTO 0); 
+SIGNAL pixel_column_int :STD_LOGIC_VECTOR(9 DOWNTO 0);
 
+signal lives_counter : std_logic_vector(3 downto 0);
+signal level_counter : std_logic_vector(3 downto 0);
+signal score_counter : std_logic_vector(19 downto 0); 
 
 BEGIN
 
@@ -116,6 +117,8 @@ BEGIN
 
 	VGA_HS <= horiz_sync_int;
 	VGA_VS <= vert_sync_int;
+	
+	
 
 
 	U1: VGA_SYNC_module PORT MAP
@@ -140,9 +143,11 @@ BEGIN
 		 Green			=> green_int,
 		 Blue		    => blue_int,
 		 Vert_sync		=> vert_sync_int,
-		 move_left      => KEY(1),
-		 move_right     => KEY(0),
-		 collide       => LEDR(17)
+		 move_left      => KEY(2),
+		 move_right     => KEY(1),
+		 score			=> score_counter,
+		 level			=> level_counter,
+		 lives			=> lives_counter
 		);
 
 		LCD_ON   <= '1';
@@ -152,7 +157,9 @@ BEGIN
 		U3: LCD_Display PORT MAP
 		(reset				=>	NOT SW(17),
 		 clk_50MHz			=>	CLOCK_50,
-		 Hex_Display_Data	=>	SW(15 DOWNTO 0),	
+		 Hex_Display_Lives	=>	lives_counter,
+		 Hex_Display_Level => level_counter,
+		 Hex_Display_Score => score_counter,
 		 LCD_RS				=>	LCD_RS,
 		 LCD_E				=>	LCD_EN,
 		 LCD_RW				=>	LCD_RW,
