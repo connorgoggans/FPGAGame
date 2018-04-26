@@ -277,24 +277,25 @@ BEGIN
 			END IF;
 END process Move_avatar;
 
---Random: process(vert_sync)
---variable rand_num: integer := 20;   
---begin
---	if(rand + rand_num >= 1280) then
---		rand <= 20 + rand_num;
---	else
---		rand <= rand + rand_num;
---	end if;
---end process Random;		
-
-Random: process(clock)
-variable count: integer := 0;
+Random: process(vert_sync)
+variable rand_num: integer := 20;   
 begin
-	if(rising_edge(clock)) then
-		count := count + 1;
-		rand <= (count mod 1280);
+	if(rand + rand_num >= 1280) then
+		rand <= 20 + rand_num;
+	else
+		rand <= rand + rand_num;
 	end if;
-end process Random;
+end process Random;		
+
+--Random: process(clock)
+--begin
+--	if(rising_edge(clock)) then
+--		rand <= rand + 1;
+--		if(rand >= 1280) then
+--			rand <= 0;
+--		end if;
+--	end if;
+--end process Random;
 			
 
 
