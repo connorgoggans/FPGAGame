@@ -70,7 +70,7 @@ SIGNAL CHAR_COUNT: STD_LOGIC_VECTOR(4 DOWNTO 0);
 SIGNAL CLK_400HZ_Enable,LCD_RW_INT : STD_LOGIC;
 SIGNAL Line1_chars, Line2_chars: STD_LOGIC_VECTOR(127 DOWNTO 0);
 
-SIGNAL score:integer;
+-- SIGNAL score:integer;
 SIGNAL score_out:std_logic_vector(19 DOWNTO 0);
 --SIGNAL counter: integer := 0;
 
@@ -82,23 +82,27 @@ BEGIN
 conv_score: process(Hex_Display_Score)
 variable score_temp:integer:= to_integer(ieee.numeric_std.unsigned(Hex_Display_Score));
 variable digit:integer;
+variable count:integer:=0;
 --variable score: integer := to_integer(unsigned(Hex_Display_Score));
 BEGIN
-	digit := score_temp mod 10;
-	score_temp := score_temp/10;
-	score_out(3 DOWNTO 0) <= conv_std_logic_vector(digit, 4);
-	digit := score_temp mod 10;
-	score_temp := score_temp/10;
-	score_out(7 DOWNTO 4) <= conv_std_logic_vector(digit, 4);
-	digit := score_temp mod 10;
-	score_temp := score_temp/10;
-	score_out(11 DOWNTO 8) <= conv_std_logic_vector(digit, 4);
-	digit := score_temp mod 10;
-	score_temp := score_temp/10;
-	score_out(15 DOWNTO 12) <= conv_std_logic_vector(digit, 4);
-	digit := score_temp mod 10;
-	score_temp := score_temp/10;
-	score_out(19 DOWNTO 16) <= conv_std_logic_vector(digit, 4);
+	while(score_temp > 0) Loop
+		digit := score_temp mod 10;
+		score_temp := score_temp/10;
+		score_out(count+3 DOWNTO count) <= conv_std_logic_vector(digit, 4);
+		count := count + 4;
+	end loop;
+	-- digit := score_temp mod 10;
+	-- score_temp := score_temp/10;
+	-- score_out(7 DOWNTO 4) <= conv_std_logic_vector(digit, 4);
+	-- digit := score_temp mod 10;
+	-- score_temp := score_temp/10;
+	-- score_out(11 DOWNTO 8) <= conv_std_logic_vector(digit, 4);
+	-- digit := score_temp mod 10;
+	-- score_temp := score_temp/10;
+	-- score_out(15 DOWNTO 12) <= conv_std_logic_vector(digit, 4);
+	-- digit := score_temp mod 10;
+	-- score_temp := score_temp/10;
+	-- score_out(19 DOWNTO 16) <= conv_std_logic_vector(digit, 4);
 END PROCESS conv_score;
 
 
