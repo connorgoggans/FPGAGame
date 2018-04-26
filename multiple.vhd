@@ -5,13 +5,13 @@ USE  IEEE.STD_LOGIC_UNSIGNED.all;
 
 
 ENTITY multiple IS
-   PORT(pixel_row, pixel_column		: IN std_logic_vector(9 DOWNTO 0);
-        Red, Green,Blue 				: OUT std_logic;
-        Vert_sync	: IN std_logic;
-		move_left, move_right : IN STD_LOGIC;
-		score: out std_logic_vector(19 downto 0);
-		lives: out std_logic_vector(3 downto 0);
-		level: out std_logic_vector(3 downto 0)
+   PORT(pixel_row, pixel_column	: in std_logic_vector(9 DOWNTO 0);
+        Red, Green,Blue 		: out std_logic;
+        Vert_sync				: in std_logic;
+		move_left, move_right	: in std_logic;
+		score					: out std_logic_vector(19 downto 0);
+		lives					: out std_logic_vector(3 downto 0);
+		level					: out std_logic_vector(3 downto 0)
 		);
 END multiple;
 
@@ -31,7 +31,7 @@ signal ball_on			: std_logic;
 
 -- signals to keep track of player's avatar --
 signal avatar_x_pos		: std_logic_vector(9 downto 0) := "0101000000";
-signal avatar_y_pos		: std_logic_vector(9 downto 0);
+signal avatar_y_pos		: std_logic_vector(9 downto 0) := conv_std_logic_vector(440,10);
 signal avatar_on		: std_logic;
 
 -- signals to keep track of extra life token --
@@ -46,19 +46,18 @@ signal toggle_life		: std_logic := '0';
 signal score_counter	: integer := 0;
 signal lives_counter	: integer := 3;
 signal level_counter	: integer := 0;
-signal score_multiplier: integer := 10;
+signal score_multiplier	: integer := 10;
 
 -- signal to store random number --
 signal rand				: integer := 0;
 
-
 BEGIN           
 	
--- Set the size of the ball
+-- Set the size of the ball and extra life token
 Size <= CONV_STD_LOGIC_VECTOR(20,10);
 life_Size <= CONV_STD_LOGIC_VECTOR(10,10);
 
-avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
+--avatar_Y_pos <= CONV_STD_LOGIC_VECTOR(440,10);
 
 VGA: process (x_positions, y_positions, pixel_column, pixel_row, Size)
 begin
