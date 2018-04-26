@@ -113,9 +113,9 @@ begin
 
 					-- initialize extra life token --
 					life_speed <= CONV_STD_LOGIC_VECTOR(4, 10);
-					life_x_pos := conv_std_logic_vector(lfsr, 10);
-					life_y_pos := life_size;
-					toggle_life := '0';
+					life_x_pos <= lfsr;
+					life_y_pos <= life_size;
+					toggle_life <= '0';
  
 					-- initialize obstacles --
 					for i in y_positions' range loop
