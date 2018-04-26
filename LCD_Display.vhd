@@ -78,27 +78,26 @@ SIGNAL score_out:std_logic_vector(19 DOWNTO 0);
 
 BEGIN
 
--- trying to convert hex display score to actual score --
-score <= to_integer(signed(Hex_Display_Score(19 downto 0)));
 
-conv_score: process(score)
-signal score_temp:integer:=score;
-signal digit:integer;
+conv_score: process(Hex_Display_Score)
+variable score_temp:integer:= to_integer(ieee.numeric_std.unsigned(Hex_Display_Score));
+variable digit:integer;
+--variable score: integer := to_integer(unsigned(Hex_Display_Score));
 BEGIN
-	digit <= mod(score_temp, 10);
-	score_temp <= score_temp/10;
+	digit := score_temp mod 10;
+	score_temp := score_temp/10;
 	score_out(3 DOWNTO 0) <= conv_std_logic_vector(digit, 4);
-	digit <= mod(score_temp, 10);
-	score_temp <= score_temp/10;
+	digit := score_temp mod 10;
+	score_temp := score_temp/10;
 	score_out(7 DOWNTO 4) <= conv_std_logic_vector(digit, 4);
-	digit <= mod(score_temp, 10);
-	score_temp <= score_temp/10;
+	digit := score_temp mod 10;
+	score_temp := score_temp/10;
 	score_out(11 DOWNTO 8) <= conv_std_logic_vector(digit, 4);
-	digit <= mod(score_temp, 10);
-	score_temp <= score_temp/10;
+	digit := score_temp mod 10;
+	score_temp := score_temp/10;
 	score_out(15 DOWNTO 12) <= conv_std_logic_vector(digit, 4);
-	digit <= mod(score_temp, 10);
-	score_temp <= score_temp/10;
+	digit := score_temp mod 10;
+	score_temp := score_temp/10;
 	score_out(19 DOWNTO 16) <= conv_std_logic_vector(digit, 4);
 END PROCESS conv_score;
 
@@ -116,7 +115,7 @@ LCD_display_string <= (
 X"4C",X"49",X"56",X"45",X"53",X"3A", X"0" & Hex_Display_Lives(3 DOWNTO 0),X"20",
 X"4C",X"45",X"56",X"45",X"4C",X"3A", X"0" & Hex_Display_Level(3 DOWNTO 0),X"20",
 -- -- Line 2
--- X"53",X"43",X"4F",X"52",X"45",X"3A",X"0" & Hex_Display_Score(19 DOWNTO 16),
+-- X"53",X"43",X"4F",X"52",X"45",X"3A",X"0" & (19 DOWNTO 16),
 --                                     X"0" & Hex_Display_Score(15 DOWNTO 12), 
 -- 												X"0" & Hex_Display_Score(11 DOWNTO 8),
 -- 										      X"0" & Hex_Display_Score(7 DOWNTO 4), 
