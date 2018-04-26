@@ -15,11 +15,11 @@ ENTITY obstacles IS
  
     -- Buttons 
     
-    KEY 		: IN STD_LOGIC_VECTOR (3 downto 0);         -- Push buttons
+    KEY 		: IN STD_LOGIC_VECTOR (3 downto 0);		-- Push buttons
 
     -- Input switches
-    
-    SW 			: IN STD_LOGIC_VECTOR (17 downto 0);         -- DPDT switches
+   
+    SW 			: IN STD_LOGIC_VECTOR (17 downto 0);	-- DPDT switches
 
     -- VGA output
     
@@ -33,12 +33,12 @@ ENTITY obstacles IS
     VGA_B 		: out unsigned(7 downto 0); -- Blue[9:0]
 
 	-- 16 X 2 LCD Module
-    LCD_BLON : out std_logic;      							-- Back Light ON/OFF
-    LCD_EN   : out std_logic;      							-- Enable
-    LCD_ON   : out std_logic;      							-- Power ON/OFF
-    LCD_RS   : out std_logic;	   							-- Command/Data Select, 0 = Command, 1 = Data
-    LCD_RW   : out std_logic; 	   						-- Read/Write Select, 0 = Write, 1 = Read
-    LCD_DATA : inout std_logic_vector(7 downto 0) 	-- Data bus 8 bits
+    LCD_BLON 	: out std_logic;      		-- Back Light ON/OFF
+    LCD_EN   	: out std_logic;			-- Enable
+    LCD_ON   	: out std_logic;      		-- Power ON/OFF
+    LCD_RS   	: out std_logic;	   		-- Command/Data Select, 0 = Command, 1 = Data
+    LCD_RW   	: out std_logic; 	   		-- Read/Write Select, 0 = Write, 1 = Read
+    LCD_DATA 	: inout std_logic_vector(7 downto 0) -- Data bus 8 bits
 
 	);
 END obstacles;
@@ -135,19 +135,19 @@ BEGIN
 		);
 		
 	U2: multiple PORT MAP
-		(pixel_row		=> pixel_row_int,
-		 pixel_column	=> pixel_column_int,
-		 Green			=> green_int,
-		 Blue		    => blue_int,
-		 Red         	=> red_int,
-		 Vert_sync		=> vert_sync_int,
-		 move_left      => KEY(2),
-		 move_right     => KEY(1),
-		 score			=> score_counter,
-		 level			=> level_counter,
-		 lives			=> lives_counter,
-		 reset			=> KEY(3),
-		 clock			=> CLOCK_50
+		(pixel_row			=> 	pixel_row_int,
+		 pixel_column		=> 	pixel_column_int,
+		 Green				=> 	green_int,
+		 Blue		    	=> 	blue_int,
+		 Red         		=> 	red_int,
+		 Vert_sync			=> 	vert_sync_int,
+		 move_left      	=> 	KEY(2),
+		 move_right     	=> 	KEY(1),
+		 score				=> 	score_counter,
+		 level				=> 	level_counter,
+		 lives				=> 	lives_counter,
+		 reset				=> 	KEY(3),
+		 clock				=> 	CLOCK_50
 		);
 
 	LCD_ON   <= '1';
@@ -158,8 +158,8 @@ BEGIN
 		(reset				=>	NOT SW(17),
 		 clk_50MHz			=>	CLOCK_50,
 		 Hex_Display_Lives	=>	lives_counter,
-		 Hex_Display_Level 	=> level_counter,
-		 Hex_Display_Score 	=> score_counter,
+		 Hex_Display_Level 	=> 	level_counter,
+		 Hex_Display_Score 	=> 	score_counter,
 		 LCD_RS				=>	LCD_RS,
 		 LCD_E				=>	LCD_EN,
 		 LCD_RW				=>	LCD_RW,

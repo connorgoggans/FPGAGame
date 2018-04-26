@@ -26,21 +26,21 @@ type motions is array (5 downto 0) of std_logic_vector(9 downto 0);
 type spawnsArray is array(1280 downto 0) of integer;
 
 
-SIGNAL Size : std_logic_vector(9 DOWNTO 0);  
-signal y_positions: coordArray;
-signal x_positions: coordArray;
-signal y_motions : motions;
-signal isStart: std_logic := '1';
-signal ball_on: std_logic;
+SIGNAL Size 			: std_logic_vector(9 DOWNTO 0) := conv_std_logic_vector(20, 10);  
+signal y_positions		: coordArray;
+signal x_positions		: coordArray;
+signal y_motions 		: motions;
+signal isStart			: std_logic := '1';
+signal ball_on			: std_logic;
 
 
 -- signals to keep track of player's avatar --
 signal avatar_x_pos		: std_logic_vector(9 downto 0) := "0101000000";
-signal avatar_y_pos		: std_logic_vector(9 downto 0) := conv_std_logic_vector(440,10);
+signal avatar_y_pos		: std_logic_vector(9 downto 0) := conv_std_logic_vector(440, 10);
 signal avatar_on		: std_logic;
 
 -- signals to keep track of extra life token --
-signal life_Size		: std_logic_vector(9 DOWNTO 0);
+signal life_Size		: std_logic_vector(9 DOWNTO 0) := conv_std_logic_vector(10, 10);
 signal life_x_pos		: std_logic_vector(9 downto 0) := conv_std_logic_vector(70, 10); 
 signal life_y_pos		: std_logic_vector(9 downto 0) := life_size;
 signal life_on			: std_logic;
@@ -61,15 +61,11 @@ signal spawns			: spawnsArray;
 signal counter			: integer := 0;
 
 -- lfsr signals --
-signal ce , lfsr_done, d0 :  std_logic;
-signal lfsr_equal : std_logic := '0';
-signal lfsr: std_logic_vector (9 downto 0);
+signal ce,lfsr_done,d0	: std_logic;
+signal lfsr_equal 		: std_logic := '0';
+signal lfsr				: std_logic_vector (9 downto 0);
 
 BEGIN           
-	
--- Set the size of the ball and extra life token
-Size <= CONV_STD_LOGIC_VECTOR(20,10);
-life_Size <= CONV_STD_LOGIC_VECTOR(10,10);
 
 -- LFSR D0 set
 d0 <= lfsr(9) xnor lfsr(6);
