@@ -25,7 +25,7 @@ p_lfsr : process (i_clk,i_rstb) begin
     if(i_sync_reset='1') then
       r_lfsr   <= i_seed;
     elsif (i_en = '1') then 
-		r_lfsr(10) <= r_lfsr(1)
+		r_lfsr(10) <= r_lfsr(1);
 	   r_lfsr(9) <= r_lfsr(10) xor r_lfsr(1);
 		r_lfsr(8) <= r_lfsr(9);
       r_lfsr(7) <= r_lfsr(8);

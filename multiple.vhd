@@ -29,9 +29,6 @@ signal y_motions : motions;
 signal rand: integer := 0;
 signal isStart: std_logic := '1';
 signal ball_on: std_logic;
---signal new_cord: std_logic_vector(9 downto 0);
---signal rand_speed: std_logic_vector(9 downto 0);
---signal counter: std_logic := '1';
 
 signal avatar_x_pos : std_logic_vector(9 downto 0) := "0101000000";
 signal avatar_y_pos : std_logic_vector(9 downto 0);
@@ -130,9 +127,6 @@ BEGIN
 					y_motions(i) <= conv_std_logic_vector(6,10);
 				end if;
 			end loop;
-			life_y_pos <= life_size;
-			life_x_pos <= conv_std_logic_vector(1300, 10);
-			life_speed <= conv_std_logic_vector(1,10);
 			isStart <= '0';
 		else
 			for i in y_positions' range loop
