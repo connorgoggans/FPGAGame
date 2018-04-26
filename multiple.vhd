@@ -14,7 +14,8 @@ ENTITY multiple IS
 		lives					: out std_logic_vector(3 downto 0);
 		level					: out std_logic_vector(3 downto 0);
 		--rand_pos: in std_logic_vector(9 downto 0);
-		clock: in std_logic
+		clock					: in std_logic;
+		reset					: in std_logic
 		);
 END multiple;
 
@@ -222,6 +223,12 @@ BEGIN
 			y_motions(2) <= conv_std_logic_vector(0, 10);
 			y_motions(3) <= conv_std_logic_vector(0, 10);
 			y_motions(4) <= conv_std_logic_vector(0, 10);
+			if(reset = '1') then
+				lives_counter <= 3;
+				isStart <= '1';
+				level_counter <= 1;
+				score_counter <= 0;
+			end if;
 		end if;
 		
 		if(score_counter = 400) then
@@ -257,8 +264,6 @@ BEGIN
 			level_counter <= 5;
 			level <= conv_std_logic_vector(level_counter, 4);
 		end if;
-			
-			
 END process Move_Ball;
 
 

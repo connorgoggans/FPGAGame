@@ -71,7 +71,8 @@ COMPONENT multiple
 		 move_left, move_right		: IN std_logic;
 		 score   					: OUT std_logic_vector(19 downto 0);
 		 lives	 					: OUT std_logic_vector(3 downto 0);
-		 level   					: OUT std_logic_vector(3 downto 0)
+		 level   					: OUT std_logic_vector(3 downto 0);
+		 reset						: IN std_logic
 		 --rand_pos : in std_logic_vector(9 downto 0)
 		);
    
@@ -148,26 +149,27 @@ BEGIN
 		 pixel_column		=>	pixel_column_int
 		);
 		
-		U2: multiple PORT MAP
+	U2: multiple PORT MAP
 		(pixel_row		=> pixel_row_int,
 		 pixel_column	=> pixel_column_int,
 		 Green			=> green_int,
 		 Blue		    => blue_int,
-		 Red         => red_int,
+		 Red         	=> red_int,
 		 Vert_sync		=> vert_sync_int,
 		 move_left      => KEY(2),
 		 move_right     => KEY(1),
 		 score			=> score_counter,
 		 level			=> level_counter,
-		 lives			=> lives_counter
+		 lives			=> lives_counter,
+		 reset			=> KEY(3)
 		 --rand_pos		=> rand
 		);
 
-		LCD_ON   <= '1';
-		LCD_BLON <= '1';
+	LCD_ON   <= '1';
+	LCD_BLON <= '1';
 
 
-		U3: LCD_Display PORT MAP
+	U3: LCD_Display PORT MAP
 		(reset				=>	NOT SW(17),
 		 clk_50MHz			=>	CLOCK_50,
 		 Hex_Display_Lives	=>	lives_counter,
