@@ -65,7 +65,8 @@ COMPONENT multiple
 		 lives	 					: OUT std_logic_vector(3 downto 0);
 		 level   					: OUT std_logic_vector(3 downto 0);
 		 reset						: IN std_logic;
-		 clock						: IN std_logic
+		 clock						: IN std_logic;
+		 score_int					: out integer
 		);
    
 END COMPONENT;
@@ -81,7 +82,8 @@ COMPONENT LCD_Display
 		 LCD_RS					: OUT std_logic;
 		 LCD_E					: OUT std_logic;
 		 LCD_RW					: OUT std_logic;
-		 DATA_BUS				: INOUT	std_logic_vector(7 DOWNTO 0)
+		 DATA_BUS				: INOUT	std_logic_vector(7 DOWNTO 0);
+		 score					: in integer
 		);
 
 END COMPONENT;
@@ -100,6 +102,8 @@ SIGNAL pixel_column_int	: std_logic_vector(9 DOWNTO 0);
 signal lives_counter 	: std_logic_vector(3 downto 0);
 signal level_counter 	: std_logic_vector(3 downto 0);
 signal score_counter 	: std_logic_vector(19 downto 0); 
+
+signal int_score			: integer;
 
 
 BEGIN
@@ -141,7 +145,8 @@ BEGIN
 		 level				=> level_counter,
 		 lives				=> lives_counter,
 		 reset				=> KEY(3),
-		 clock				=> CLOCK_50
+		 clock				=> CLOCK_50,
+		 score_int			=> int_score
 		);
 
 	LCD_ON   <= '1';
@@ -157,7 +162,8 @@ BEGIN
 		 LCD_RS				=>	LCD_RS,
 		 LCD_E				=>	LCD_EN,
 		 LCD_RW				=>	LCD_RW,
-		 DATA_BUS			=>	LCD_DATA
+		 DATA_BUS			=>	LCD_DATA,
+		 score				=> int_score
 		);
 
 END structural;

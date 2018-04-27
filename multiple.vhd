@@ -13,7 +13,8 @@ entity multiple is
 		lives                   : out std_logic_vector(3 downto 0);
 		level                   : out std_logic_vector(3 downto 0);
 		clock                   : in std_logic;
-		reset                   : in std_logic
+		reset                   : in std_logic;
+		score_int					: out integer
 	);
 end multiple;
 architecture behavior of multiple is
@@ -47,7 +48,7 @@ architecture behavior of multiple is
 	signal score_counter    : integer := 0;
 	signal lives_counter    : integer := 3;
 	signal level_counter    : integer := 0;
-	signal score_multiplier : integer := 10;
+	signal score_multiplier : integer := 1;
 
 	-- lfsr signals --
 	signal ce, lfsr_done, d0 : std_logic;
@@ -252,7 +253,7 @@ begin
 					end if;
 				end if;
  
-				if (score_counter = 500) then
+				if (score_counter = 50) then
 					y_motions(0)  <= conv_std_logic_vector(4, 10);
 					y_motions(1)  <= conv_std_logic_vector(5, 10);
 					y_motions(2)  <= conv_std_logic_vector(3, 10);
@@ -261,7 +262,7 @@ begin
 					y_motions(5)  <= conv_std_logic_vector(8, 10);
 					level_counter <= 2;
 					level         <= conv_std_logic_vector(level_counter, 4);
-				elsif (score_counter = 1100) then
+				elsif (score_counter = 110) then
 					y_motions(0)  <= conv_std_logic_vector(5, 10);
 					y_motions(1)  <= conv_std_logic_vector(6, 10);
 					y_motions(2)  <= conv_std_logic_vector(4, 10);
@@ -270,7 +271,7 @@ begin
 					y_motions(5)  <= conv_std_logic_vector(9, 10);
 					level_counter <= 3;
 					level         <= conv_std_logic_vector(level_counter, 4);
-				elsif (score_counter = 1800) then
+				elsif (score_counter = 180) then
 					y_motions(0)  <= conv_std_logic_vector(6, 10);
 					y_motions(1)  <= conv_std_logic_vector(7, 10);
 					y_motions(2)  <= conv_std_logic_vector(5, 10);
@@ -279,7 +280,7 @@ begin
 					y_motions(5)  <= conv_std_logic_vector(10, 10);
 					level_counter <= 4;
 					level         <= conv_std_logic_vector(level_counter, 4);
-				elsif (score_counter = 2600) then
+				elsif (score_counter = 260) then
 					y_motions(0)  <= conv_std_logic_vector(7, 10);
 					y_motions(1)  <= conv_std_logic_vector(8, 10);
 					y_motions(2)  <= conv_std_logic_vector(6, 10);
